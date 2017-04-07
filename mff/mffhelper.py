@@ -142,8 +142,6 @@ list_gear_statname = ("physicalattackperlv.",
                       "energydefense",
                       "alldefenses")
 
-screenshot2 = Image.open('C:/Users/Daniel/Nox_share/Image/Screenshot_2017-03-28-12-13-38.png')
-screenshot = Image.open('C:/Users/Daniel/Nox_share/Image/Screenshot_2017-03-23-22-51-31.png')
 
 
 class GearValue:
