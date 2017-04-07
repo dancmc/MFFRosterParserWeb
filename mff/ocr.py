@@ -12,7 +12,14 @@ def binarise_greyscale_image(im, threshold=150):
     # in RBG, ndarray contains (row) number of arrays of (column) elements each. Each element is an RBG array
     # in monochrome, ndarray contains (row) number of arrays of (column) ints
     monochrome_image = im.convert('L')  # convert image to monochrome
-    bw_array = numpy.where(numpy.array(monochrome_image) > threshold, 255, 0)
+    # bw_array = numpy.where(numpy.array(monochrome_image) > threshold, 255, 0)
+    bw_array = numpy.array(monochrome_image)
+    for i in range(len(bw_array)):
+        for j in range(len(bw_array[0])):
+            if bw_array[i][j] > threshold:
+                bw_array[i][j] = 255
+            else:
+                bw_array[i][j] = 0
 
     # original_array = numpy.array(im)
     # image2 = numpy.ones((im.size[0], im.size[1], 3), dtype=numpy.int)

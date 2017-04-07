@@ -21,7 +21,7 @@ def mff_ocr():
 #### DB stuff ######################################################
 @app.before_request
 def db_connect():
-
+    # pass
     g.db_conn = MySQLdb.connect(host=settings.DB_HOST,
                                 user=settings.DB_USER,
                                 passwd=settings.DB_PASSWD,
@@ -30,6 +30,8 @@ def db_connect():
 @app.teardown_request
 def db_disconnect(exception=None):
     g.db_conn.close()
+    # pass
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

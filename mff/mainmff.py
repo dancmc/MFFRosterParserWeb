@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from mff.mffhelper import get_char_json
 
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__name__), 'mff/uploaded_screenshots')
+UPLOAD_FOLDER = '/var/www/app_dancmc/mff/uploaded_screenshots'
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 
@@ -146,7 +146,7 @@ def do_ocr(file_list):
     #
     file_paths = list()
     if not os.path.isdir(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     for file in file_list:
         file_path = os.path.join(UPLOAD_FOLDER ,secure_filename(file.filename))
         file.save(file_path)

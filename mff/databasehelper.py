@@ -16,10 +16,10 @@ def get_chars_from_gear(ocr_output):
 
 
     # try to find exact match for gear name
-    sql = "SELECT char_alias, gear1 as gear_name, '1' AS gear_num FROM mff WHERE (%s) = gear1 GROUP BY char_alias, gear1 " \
-          "UNION SELECT char_alias, gear2, '2' AS gear_num FROM mff WHERE (%s) = gear2 GROUP BY char_alias, gear2 " \
-          "UNION SELECT char_alias, gear3, '3' AS gear_num FROM mff WHERE (%s) = gear3 GROUP BY char_alias, gear3 " \
-          "UNION SELECT char_alias, gear4, '4' AS gear_num FROM mff WHERE (%s) = gear4 GROUP BY char_alias, gear4"
+    sql = "SELECT char_alias, gear1 as gear_name, '1' AS gear_num FROM mff WHERE %s = gear1 GROUP BY char_alias, gear1 " \
+          "UNION SELECT char_alias, gear2, '2' AS gear_num FROM mff WHERE %s = gear2 GROUP BY char_alias, gear2 " \
+          "UNION SELECT char_alias, gear3, '3' AS gear_num FROM mff WHERE %s = gear3 GROUP BY char_alias, gear3 " \
+          "UNION SELECT char_alias, gear4, '4' AS gear_num FROM mff WHERE %s = gear4 GROUP BY char_alias, gear4"
     data = (ocr_output, ocr_output, ocr_output, ocr_output,)
     cur.execute(sql, data)
 
@@ -53,7 +53,7 @@ def get_char_alias(char_name):
     cur = connect()
 
     data = (char_name,)
-    SQL = "SELECT char_alias FROM mff WHERE (%s) = char"
+    SQL = "SELECT char_alias FROM mff WHERE %s = char"
     cur.execute(SQL, data)
 
     char_alias = ""
@@ -76,7 +76,7 @@ def get_uniform_alias(uni_name):
     cur = connect()
 
     data = (uni_name,)
-    SQL = "SELECT uni_alias FROM mff WHERE (%s) = uni"
+    SQL = "SELECT uni_alias FROM mff WHERE %s = uni"
     cur.execute(SQL, data)
 
     uni_alias = ""
@@ -99,7 +99,7 @@ def get_default_uni(char_alias):
     cur = connect()
 
     data = (char_alias,)
-    SQL = "SELECT uni_alias FROM mff WHERE (%s) = char_alias LIMIT 1"
+    SQL = "SELECT uni_alias FROM mff WHERE %s = char_alias LIMIT 1"
     cur.execute(SQL, data)
     rows = cur.fetchall()
     default_uni = rows[0][0]
