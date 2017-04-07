@@ -1,13 +1,10 @@
-import psycopg2
+from flask import g
 import Levenshtein
-from collections import namedtuple
 
-CharGear = namedtuple("CharGear", "char_alias, gear_name, gear_num")
 
 def connect():
     try:
-        conn = psycopg2.connect("dbname='postgres' user='postgres' host='localhost' password='personal1'")
-        cur = conn.cursor()
+        cur = g.db_conn.cursor()
         return cur
     except:
         print("unable to connect")
@@ -16,7 +13,6 @@ def connect():
 def get_chars_from_gear(ocr_output):
     cur = connect()
     result_list = list()
-
 
 
     # try to find exact match for gear name
@@ -29,7 +25,7 @@ def get_chars_from_gear(ocr_output):
 
     rows = cur.fetchall()
     for row in rows:
-        result_list.append(CharGear(char_alias=row[0], gear_name=row[1], gear_num=int(row[2])))
+        result_list.append({"char_alias" : row[0], "gear_name" : row[1], "gear_num" : int(row[2])})
 
     # if no exact match, try to find close match
     if cur.rowcount == 0:
@@ -45,7 +41,7 @@ def get_chars_from_gear(ocr_output):
             threshold = 4 if len(ocr_output) > 8 else 3
 
             if Levenshtein.distance(ocr_output, row[1]) < threshold:
-                result_list.append(CharGear(char_alias=row[0], gear_name=row[1], gear_num=int(row[2])))
+                result_list.append({"char_alias" : row[0], "gear_name" : row[1], "gear_num" : int(row[2])})
 
     # there may be more than 1 character with the same gear (in potentially different slots)
     # return list of tuples in format (char_alias, gear name, gear number)
@@ -99,3 +95,14 @@ def get_uniform_alias(uni_name):
     cur.close()
     return uni_alias
 
+def get_default_uni(char_alias):
+    cur = connect()
+
+    data = (char_alias,)
+    SQL = "SELECT uni_alias FROM mff WHERE (%s) = char_alias LIMIT 1"
+    cur.execute(SQL, data)
+    rows = cur.fetchall()
+    default_uni = rows[0][0]
+
+    cur.close()
+    return default_uni

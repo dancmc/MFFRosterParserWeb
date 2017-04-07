@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MFF Parser</title>
+</head>
+<body>
+
+<h1>MFF OCR Example</h1>
+<form id="image_submit" action="/mff/ocr" method="post" enctype="multipart/form-data" onsubmit="return false">
+    <p><input type="file" name="image" multiple/>
+
+    <p><input type="submit" value="Submit"/></p>
+
+</form>
+
+<div id="testdiv">
+
+</div>
+
+<script src="../static/js/jquery-3.2.0.js" type="text/javascript" charset="utf-8"></script>
+<script src="../static/js/mff.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
