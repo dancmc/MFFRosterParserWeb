@@ -1,10 +1,24 @@
 from flask import g
 import Levenshtein
+from mff import settings
+import MySQLdb
 
+
+def get_db():
+    # g._database =
+    # db = getattr(g, '_database', None)
+    # if db is None:
+    db =  MySQLdb.connect(host=settings.DB_HOST,
+                        user=settings.DB_USER,
+                        passwd=settings.DB_PASSWD,
+                        db=settings.DB_NAME,
+                        charset="utf8")
+    return db
 
 def connect():
     try:
-        cur = g.db_conn.cursor()
+        db = get_db()
+        cur = db.cursor()
         return cur
     except:
         print("unable to connect")
@@ -53,7 +67,7 @@ def get_char_alias(char_name):
     cur = connect()
 
     data = (char_name,)
-    SQL = "SELECT char_alias FROM mff WHERE %s = char"
+    SQL = "SELECT char_alias FROM mff WHERE %s = char_name"
     cur.execute(SQL, data)
 
     char_alias = ""
@@ -61,7 +75,7 @@ def get_char_alias(char_name):
         rows = cur.fetchall()
         char_alias = rows[0][0]
     else:
-        SQL = "SELECT char_alias, char FROM mff"
+        SQL = "SELECT char_alias, char_name FROM mff"
         cur.execute(SQL)
         rows = cur.fetchall()
         for row in rows:
@@ -69,6 +83,7 @@ def get_char_alias(char_name):
             if Levenshtein.distance(char_name, row[1]) < threshold:
                 char_alias = row[0]
 
+    print(char_alias)
     cur.close()
     return char_alias
 
@@ -76,7 +91,7 @@ def get_uniform_alias(uni_name):
     cur = connect()
 
     data = (uni_name,)
-    SQL = "SELECT uni_alias FROM mff WHERE %s = uni"
+    SQL = "SELECT uni_alias FROM mff WHERE %s = uni_name"
     cur.execute(SQL, data)
 
     uni_alias = ""
@@ -84,7 +99,7 @@ def get_uniform_alias(uni_name):
         rows = cur.fetchall()
         uni_alias = rows[0][0]
     else:
-        SQL = "SELECT uni_alias, uni FROM mff"
+        SQL = "SELECT uni_alias, uni_name FROM mff"
         cur.execute(SQL)
         rows = cur.fetchall()
         for row in rows:

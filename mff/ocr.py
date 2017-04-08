@@ -12,14 +12,13 @@ def binarise_greyscale_image(im, threshold=150):
     # in RBG, ndarray contains (row) number of arrays of (column) elements each. Each element is an RBG array
     # in monochrome, ndarray contains (row) number of arrays of (column) ints
     monochrome_image = im.convert('L')  # convert image to monochrome
-    # bw_array = numpy.where(numpy.array(monochrome_image) > threshold, 255, 0)
-    bw_array = numpy.array(monochrome_image)
-    for i in range(len(bw_array)):
-        for j in range(len(bw_array[0])):
-            if bw_array[i][j] > threshold:
-                bw_array[i][j] = 255
-            else:
-                bw_array[i][j] = 0
+    bw_array = numpy.where(numpy.array(monochrome_image, numpy.uint8) > threshold, 255, 0)
+
+    # bw_array = numpy.array(monochrome_image)
+    # for i in range(bw_array.shape[0]):
+    #     for j in range(bw_array.shape[0]):
+    #         bw_array[i][j] = 255 if bw_array[i][j] > threshold else 0
+
 
     # original_array = numpy.array(im)
     # image2 = numpy.ones((im.size[0], im.size[1], 3), dtype=numpy.int)
@@ -28,7 +27,7 @@ def binarise_greyscale_image(im, threshold=150):
     #         original_array[i][j] = [255, 255, 255] if (check_similarity(original_array[i][j], 50) else [0, 0, 0]
     # print(image2)
 
-    bw_image = Image.fromarray(bw_array)
+    bw_image = Image.fromarray(bw_array.astype('uint8'))
     rgbimg = Image.new("RGBA", bw_image.size)
     rgbimg.paste(bw_image)
     return rgbimg
@@ -36,7 +35,7 @@ def binarise_greyscale_image(im, threshold=150):
 
 def is_color_similar(color1, color2, similarity):
     threshold = math.pow(similarity, 2) * 3
-    # color1 = ImageColor.getrgb(color1)
+
     color2 = ImageColor.getrgb(color2)
     # lambda acts as a for loop iterating over elements of arguments
     color_diff = sum(tuple(map(lambda x, y: math.pow(x - y, 2), color1, color2)))
@@ -76,11 +75,10 @@ class Ocr:
         self.api.SetImage(black_white_image)
 
         return self.api.GetUTF8Text().lower().replace("%", "").replace("\n", "")
-        # return pytesseract.image_to_string(black_white_image).lower().replace("%", "")
 
 
-    def ocr_using_color_similarity(self, image, color="white"):
-        black_white_image = binarise_color_image(image, color)
+    def ocr_using_color_similarity(self, image, color="white", similarity = 30):
+        black_white_image = binarise_color_image(image, color, similarity=similarity)
         self.api.SetImage(black_white_image)
         return self.api.GetUTF8Text().lower().replace("%", "").replace("\n", "")
 

@@ -204,6 +204,9 @@ class Character:
 def greyscale_ocr(image, rect, threshold=140):
     return ocr_ob.ocr_using_greyscale(image.crop(rect), threshold)
 
+def color_ocr(image, rect, color, threshold=50):
+    return ocr_ob.ocr_using_color_similarity(image.crop(rect), color=color, similarity=threshold)
+
 
 def get_gear(screenshot, rects):
     # split gear state rectangle into left and right
@@ -226,9 +229,10 @@ def get_gear(screenshot, rects):
                 for i, item in enumerate(list_gear_statname):
                     if Levenshtein.distance(item, raw_type) < 3:
                         type = list_gear_val[i]
-
-        val = greyscale_ocr(image, right_rect, threshold=140).replace(" ", "").replace("%", "").replace("+", "")
+        val = color_ocr(image, right_rect, color="#0A1223", threshold=50).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
+        # val = greyscale_ocr(image, right_rect, threshold=145).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
         if val != "":
+            print(val)
             val = float(val)
         else:
             val = 0.
@@ -279,7 +283,6 @@ def get_char_json(filepath):
         char.debuff = greyscale_ocr(screenshot, rects.rect_debuff, 240)
         char.scd = greyscale_ocr(screenshot, rects.rect_scd, 240)
 
-        print(datetime.datetime.now() - time)
         return {"result_json": '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False), "filepath": filepath}
 
     elif greyscale_ocr(screenshot, rects.rect_check_gear_page, threshold=100) == "gear":
@@ -298,7 +301,7 @@ def get_char_json(filepath):
             char.gear[gear_num] = get_gear(screenshot, rects.list_rect_gearstat)
             char.uniform = get_default_uni(char.id)
 
-            print(datetime.datetime.now() - time)
+            print(char.id)
 
             return {"result_json": '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False), "filepath": filepath}
         else:

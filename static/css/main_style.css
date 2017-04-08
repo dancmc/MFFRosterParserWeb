@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+#result_div img {
+    float: left;
+    width: 25%;
+    border: inset;
+    margin: 20px;
+}
+
+#result_div span {
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: middle;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}

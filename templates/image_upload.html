@@ -4,22 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <title>MFF Parser</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/main_style.css">
 </head>
 <body>
 
 <h1>MFF OCR Example</h1>
 <form id="image_submit" action="/mff/ocr" method="post" enctype="multipart/form-data" onsubmit="return false">
-    <p><input type="file" name="image" multiple/>
-
+    <p><input type="file" id ="images" name="file" multiple/>
     <p><input type="submit" value="Submit"/></p>
-
 </form>
 
-<div id="testdiv">
+<div class="clearfix" id="result_div">
 
 </div>
 
-<script src="../static/js/jquery-3.2.0.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../static/js/mff.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>

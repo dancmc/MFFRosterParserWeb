@@ -7,17 +7,15 @@ import threading
 import time
 import jsonpickle
 from PIL import Image
+import uuid
 
 from werkzeug.utils import secure_filename
 from mff.mffhelper import get_char_json
 
-
 UPLOAD_FOLDER = '/var/www/app_dancmc/mff/uploaded_screenshots'
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
-
 def do_ocr(file_list):
-
     class ResultJSON:
         def __init__(self):
             self.time_taken = 0
@@ -26,7 +24,6 @@ def do_ocr(file_list):
             self.successful = list()
             self.failures = list()
             self.duplicate_gears = list()
-
 
     result_json = ResultJSON()
     num_total_files = len(file_list)
@@ -52,7 +49,8 @@ def do_ocr(file_list):
         # targeting thumbnail width of 450
         original_w = image.size[0]
         original_h = image.size[1]
-        scale = 450 / original_w
+        print(original_w)
+        scale = 500 / original_w
 
         # modifies image object in place
         image.thumbnail((int(original_w * scale), int(original_h * scale)))
@@ -71,28 +69,27 @@ def do_ocr(file_list):
     def log_result(result):
         if result is None:
             nonlocal num_invalid_images
-            num_invalid_images+=1
+            num_invalid_images += 1
         # Add resized thumbnails to failures
         elif type(result) is str:
             result_json.failures.append(resize_and_to_base64(result))
         # Add resized thumbnails and json to successful
-        elif len(result)==2:
+        elif len(result) == 2:
             # print(result["result_json"])
-            result_json.successful.append({resize_and_to_base64(result["filepath"]) : result["result_json"]})
+            result_json.successful.append({resize_and_to_base64(result["filepath"]): result["result_json"]})
         # Add resized thumbnails and json to duplicate gears
-        elif len(result)==3:
+        elif len(result) == 3:
             char_list = result["char_list"]
             char_dict = {}
             for char in char_list:
                 char_dict[char["char_alias"]] = char["gear_num"]
 
             result_json.duplicate_gears.append(
-                {"thumbnail_base64" : resize_and_to_base64(result['filepath']),
-                 "gear_name" : result['char_list'][0]["gear_name"],
-                 "gear_json" : result["gear_json"],
-                 "chars" : char_dict}
+                {"thumbnail_base64": resize_and_to_base64(result['filepath']),
+                 "gear_name": result['char_list'][0]["gear_name"],
+                 "gear_json": result["gear_json"],
+                 "chars": char_dict}
             )
-
 
     def process_images(validated_file_paths):
         time = datetime.datetime.now()
@@ -114,7 +111,6 @@ def do_ocr(file_list):
         result_json.number_total_files = num_total_files
         result_json.number_invalid_files = num_invalid_images
 
-
         return jsonpickle.encode(result_json, unpicklable=False)
 
     # request.files returns an immutable multidict
@@ -130,27 +126,28 @@ def do_ocr(file_list):
         ext = imghdr.what("", file.read())
         file.seek(0)
         ext = None if ext is None else ext.lower()
-
         return ext if ext in ALLOWED_EXTENSIONS else None
 
     # remove all non-valid files
     for file in file_list:
         if file and file.filename != '':
             ext = get_ext(file)
+            print(ext)
             if ext is None:
                 file_list.remove(file)
-                num_invalid_images+=1
+                num_invalid_images += 1
             else:
-                file.filename = os.path.splitext(file.filename)[0]+"."+ext
+                file.filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
 
     #
     file_paths = list()
     if not os.path.isdir(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     for file in file_list:
-        file_path = os.path.join(UPLOAD_FOLDER ,secure_filename(file.filename))
+        file_path = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
         file.save(file_path)
         file_paths.append(file_path)
 
     # pass on
     return process_images(validated_file_paths=file_paths)
+
