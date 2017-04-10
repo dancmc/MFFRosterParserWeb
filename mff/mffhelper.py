@@ -4,9 +4,12 @@ import Levenshtein
 import jsonpickle
 from PIL import Image
 from mff.databasehelper import *
-
 from mff.ocr import Ocr
+import math
 
+ASPECT_RATIO_169 = 1.777777
+ASPECT_RATIO_1610 = 1.6
+ASPECT_RATIO_43 = 1.3333333
 
 class UnsupportedRatioException(ValueError):
     pass
@@ -21,11 +24,13 @@ class Rects:
         aspect = width / height
         scale = 1.
 
+
         def scale_rect(rect):
             return tuple(int(scale * i) for i in rect)
 
-        if aspect == 16 / 9:
+        if math.isclose(ASPECT_RATIO_169, aspect, rel_tol=0.04):
             scale = width / 1920
+            print(scale)
 
             self.rect_check_details_page = scale_rect((586, 184, 733, 223))
             self.rect_check_gear_page = scale_rect((156, 23, 313, 74))
@@ -60,7 +65,7 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((400, 564, 1024, 603)))
             self.list_rect_gearstat.append(scale_rect((400, 606, 1024, 646)))
 
-        elif aspect == 16 / 10:
+        elif math.isclose(ASPECT_RATIO_1610, aspect, rel_tol=0.04):
             self.rect_check_details_page = scale_rect((586, 184, 733, 223))
             self.rect_check_gear_page = scale_rect((156, 23, 313, 74))
             self.rect_gear_name = scale_rect((387, 143, 1018, 187))
@@ -94,7 +99,7 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((400, 564, 1024, 603)))
             self.list_rect_gearstat.append(scale_rect((400, 606, 1024, 646)))
 
-        elif aspect == 4 / 3:
+        elif math.isclose(ASPECT_RATIO_43, aspect, rel_tol=0.04):
             return
 
         else:
@@ -204,11 +209,12 @@ class Character:
 def greyscale_ocr(image, rect, threshold=140):
     return ocr_ob.ocr_using_greyscale(image.crop(rect), threshold)
 
-def color_ocr(image, rect, color, threshold=50):
-    return ocr_ob.ocr_using_color_similarity(image.crop(rect), color=color, similarity=threshold)
+def color_ocr(image, rect, color=(255,255,255), threshold=20, inverted_colors=False, erode=False):
+    return ocr_ob.ocr_using_color_similarity(image.crop(rect), color, threshold,  inverted_colors, erode)
 
 
 def get_gear(screenshot, rects):
+
     # split gear state rectangle into left and right
     def split_gear_rect(rect):
         return ((rect[0], rect[1], int((rect[2] - rect[0]) * 0.8 + rect[0]), rect[3]),
@@ -220,7 +226,7 @@ def get_gear(screenshot, rects):
         right_rect = stat_rects[1]
 
         type = ""
-        raw_type = greyscale_ocr(image, left_rect, threshold=70).replace(" ", "").lower()
+        raw_type = greyscale_ocr(image, left_rect,  threshold=120).replace(" ", "").lower()
         if raw_type != "":
             for i, item in enumerate(list_gear_statname):
                 if item in raw_type:
@@ -229,11 +235,13 @@ def get_gear(screenshot, rects):
                 for i, item in enumerate(list_gear_statname):
                     if Levenshtein.distance(item, raw_type) < 3:
                         type = list_gear_val[i]
-        val = color_ocr(image, right_rect, color="#0A1223", threshold=50).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
+        val = color_ocr(image, right_rect, color=(10, 18, 35), threshold=60, inverted_colors=True, erode=True ).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
         # val = greyscale_ocr(image, right_rect, threshold=145).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
         if val != "":
-            print(val)
-            val = float(val)
+            try:
+                val = float(val)
+            except:
+                val = 0.
         else:
             val = 0.
 
@@ -249,6 +257,14 @@ def get_char_json(filepath):
 
     screenshot = Image.open(filepath)
 
+    now = datetime.datetime.now()
+    desiredwidth = 1920
+    scale = desiredwidth / screenshot.size[0]
+    if screenshot.size[0]< desiredwidth:
+        screenshot= screenshot.resize((desiredwidth, int(scale*screenshot.size[1])), Image.NEAREST)
+    elif screenshot.size[0]>desiredwidth:
+        screenshot.thumbnail((int(screenshot.size[0]*scale), int(screenshot.size[1]*scale)))
+    print("scaled in "+str(datetime.datetime.now()-now))
 
     time = datetime.datetime.now()
     width = screenshot.size[0]
@@ -258,36 +274,36 @@ def get_char_json(filepath):
     try:
         rects = Rects(width, height)
     except UnsupportedRatioException:
-        return UnsupportedRatioException
+        return None
 
     if greyscale_ocr(screenshot, rects.rect_check_details_page, threshold=100) == "attack":
 
         char = Character()
 
-        char.tier = 2 if ("2" in greyscale_ocr(screenshot, rects.rect_tier, 180)) else 1
+        char.tier = 2 if ("2" in color_ocr(screenshot, rects.rect_tier, (8, 20, 34), 50, inverted_colors=True, erode=True)) else 1
         char.id = get_char_alias(greyscale_ocr(screenshot, rects.rect_char, 180))
         char.uniform = get_uniform_alias(greyscale_ocr(screenshot, rects.rect_uni, 180))
-        char.attack.physical = greyscale_ocr(screenshot, rects.rect_phys_att, 240)
-        char.attack.energy = greyscale_ocr(screenshot, rects.rect_energy_att, 240)
-        char.atkspeed = greyscale_ocr(screenshot, rects.rect_atk_spd, 240)
-        char.critrate = greyscale_ocr(screenshot, rects.rect_crit_rate, 240)
-        char.critdamage = greyscale_ocr(screenshot, rects.rect_crit_dam, 240)
-        char.defpen = greyscale_ocr(screenshot, rects.rect_def_pen, 240)
-        char.ignore_dodge = greyscale_ocr(screenshot, rects.rect_ignore_dodge, 240)
-        char.defense.physical = greyscale_ocr(screenshot, rects.rect_phys_def, 240)
-        char.defense.energy = greyscale_ocr(screenshot, rects.rect_energy_def, 240)
-        char.hp = greyscale_ocr(screenshot, rects.rect_hp, 240)
-        char.recorate = greyscale_ocr(screenshot, rects.rect_recorate, 240)
-        char.dodge = greyscale_ocr(screenshot, rects.rect_dodge, 240)
-        char.movspeed = greyscale_ocr(screenshot, rects.rect_mv_spd, 240)
-        char.debuff = greyscale_ocr(screenshot, rects.rect_debuff, 240)
-        char.scd = greyscale_ocr(screenshot, rects.rect_scd, 240)
+        char.attack.physical = color_ocr(screenshot, rects.rect_phys_att, (255,255,255))
+        char.attack.energy = color_ocr(screenshot, rects.rect_energy_att, (255,255,255))
+        char.atkspeed = color_ocr(screenshot, rects.rect_atk_spd, (255,255,255))
+        char.critrate = color_ocr(screenshot, rects.rect_crit_rate, (255,255,255))
+        char.critdamage = color_ocr(screenshot, rects.rect_crit_dam, (255,255,255))
+        char.defpen = color_ocr(screenshot, rects.rect_def_pen, (255,255,255))
+        char.ignore_dodge = color_ocr(screenshot, rects.rect_ignore_dodge, (255,255,255))
+        char.defense.physical = color_ocr(screenshot, rects.rect_phys_def, (255,255,255))
+        char.defense.energy = color_ocr(screenshot, rects.rect_energy_def, (255,255,255))
+        char.hp = color_ocr(screenshot, rects.rect_hp, (255,255,255))
+        char.recorate = color_ocr(screenshot, rects.rect_recorate, (255,255,255))
+        char.dodge = color_ocr(screenshot, rects.rect_dodge, (255,255,255))
+        char.movspeed = color_ocr(screenshot, rects.rect_mv_spd, (255,255,255))
+        char.debuff = color_ocr(screenshot, rects.rect_debuff, (255,255,255))
+        char.scd = color_ocr(screenshot, rects.rect_scd, (255,255,255))
 
         return {"result_json": '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False), "filepath": filepath}
 
-    elif greyscale_ocr(screenshot, rects.rect_check_gear_page, threshold=100) == "gear":
+    elif greyscale_ocr(screenshot, rects.rect_check_gear_page, threshold=140) == "gear":
 
-        gear_name = greyscale_ocr(screenshot, rects.rect_gear_name, threshold=230)
+        gear_name = color_ocr(screenshot, rects.rect_gear_name, threshold=40, color=(255,255,255))
 
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)
         char_list = get_chars_from_gear(gear_name)
@@ -301,7 +317,6 @@ def get_char_json(filepath):
             char.gear[gear_num] = get_gear(screenshot, rects.list_rect_gearstat)
             char.uniform = get_default_uni(char.id)
 
-            print(char.id)
 
             return {"result_json": '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False), "filepath": filepath}
         else:

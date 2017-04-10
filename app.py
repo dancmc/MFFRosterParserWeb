@@ -1,5 +1,4 @@
 from mff.mainmff import do_ocr
-import mff.settings as settings
 from flask import Flask, render_template, request, g
 from flask_cors import CORS, cross_origin
 
@@ -32,4 +31,5 @@ def mff_ocr():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+
 

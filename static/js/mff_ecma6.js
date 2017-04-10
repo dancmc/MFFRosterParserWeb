@@ -1,17 +1,22 @@
-import {Compress} from 'bundle'
+
+
+const Compress = require('compress.js')
+const compress = new Compress()
+
 
 $("#image_submit").submit(function (event) {
     event.preventDefault();
 
+    console.log("hi")
     var formData = new FormData();
     var images = [...document.getElementById('images').files]
 
     console.log(images)
-    Compress.compress(images, {
-        size: 0.1, // the max size in MB, defaults to 2MB
-        quality: 0.75, // the quality of the image, max is 1,
-        maxWidth: 1280, // the max width of the output image, defaults to 1920px
-        maxHeight: 1280, // the max height of the output image, defaults to 1920px
+    compress.compress(images, {
+        size: 0.15, // the max size in MB, defaults to 2MB
+        quality: 0.8, // the quality of the image, max is 1,
+        maxWidth: 2000, // the max width of the output image, defaults to 1920px
+        maxHeight: 1920, // the max height of the output image, defaults to 1920px
         resize: true, // defaults to true, set false if you do not want to resize the image width and height
     }).then((data) => {
         // returns an array of compressed images
@@ -39,7 +44,7 @@ function sub(formData) {
         contentType: false,
         processData: false,
         success: function (returndata) {
-
+            console.log(returndata)
             var json = JSON.parse(returndata);
 
             // getting list of single image

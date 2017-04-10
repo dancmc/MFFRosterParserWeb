@@ -67,6 +67,7 @@ def do_ocr(file_list):
         return image_dataurl
 
     def log_result(result):
+        print(result)
         if result is None:
             nonlocal num_invalid_images
             num_invalid_images += 1
@@ -75,7 +76,7 @@ def do_ocr(file_list):
             result_json.failures.append(resize_and_to_base64(result))
         # Add resized thumbnails and json to successful
         elif len(result) == 2:
-            # print(result["result_json"])
+            print(result["result_json"])
             result_json.successful.append({resize_and_to_base64(result["filepath"]): result["result_json"]})
         # Add resized thumbnails and json to duplicate gears
         elif len(result) == 3:
@@ -144,7 +145,7 @@ def do_ocr(file_list):
     if not os.path.isdir(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     for file in file_list:
-        file_path = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
+        file_path =UPLOAD_FOLDER+"/" +secure_filename(file.filename)
         file.save(file_path)
         file_paths.append(file_path)
 

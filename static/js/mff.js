@@ -1,3 +1,5 @@
+// use this file if not using npm or using ecmascript 5
+
 var totalcount
 var currentcount;
 var formData;
@@ -68,7 +70,7 @@ $("#image_submit").submit(function (event) {
 });
 
 function sub(formData) {
-    // }
+
     $.ajax({
         url: "/mff/ocr",
         type: 'POST',

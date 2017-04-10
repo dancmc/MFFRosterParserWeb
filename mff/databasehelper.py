@@ -1,4 +1,3 @@
-from flask import g
 import Levenshtein
 from mff import settings
 import MySQLdb
@@ -82,8 +81,6 @@ def get_char_alias(char_name):
             threshold = 4 if len(char_name) > 8 else 3
             if Levenshtein.distance(char_name, row[1]) < threshold:
                 char_alias = row[0]
-
-    print(char_alias)
     cur.close()
     return char_alias
 
