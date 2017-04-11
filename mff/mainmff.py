@@ -110,14 +110,22 @@ def do_ocr(file_list):
             char = result["result_char"]
             result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
             final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
-
+            print(char.ocr_gear_num)
             # sql logs
-            generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, uni_alias=char.uniform,
-                         tier=char.tier, phys_att=char.attack.physical, energy_att=char.attack.energy,
-                         atk_spd=char.atkspeed, crit_rate=char.critrate, crit_dam=char.critdamage,
-                         def_pen=char.defpen, ignore_dodge=char.ignore_dodge, phys_def=char.defense.physical,
-                         energy_def=char.defense.energy, hp=char.hp, reco_rate=char.recorate, dodge=char.dodge,
-                         mv_spd=char.movspeed, debuff=char.debuff, scd=char.scd, time_utc=int(time.time()))
+            if char.ocr_gear_num<0:
+                generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, uni_alias=char.uniform,
+                             tier=char.tier, phys_att=char.attack.physical, energy_att=char.attack.energy,
+                             atk_spd=char.atkspeed, crit_rate=char.critrate, crit_dam=char.critdamage,
+                             def_pen=char.defpen, ignore_dodge=char.ignore_dodge, phys_def=char.defense.physical,
+                             energy_def=char.defense.energy, hp=char.hp, reco_rate=char.recorate, dodge=char.dodge,
+                             mv_spd=char.movspeed, debuff=char.debuff, scd=char.scd, time_utc=int(time.time()))
+            else :
+                gear = char.gear[char.ocr_gear_num]
+                generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, type_1=gear[0].type,
+                         val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val,type_3=gear[2].type,
+                         val_3=gear[2].val,type_4=gear[3].type, val_4=gear[3].val,type_5=gear[4].type,
+                         val_5=gear[4].val,type_6=gear[5].type, val_6=gear[5].val,type_7=gear[6].type,
+                         val_7=gear[6].val,type_8=gear[7].type, val_8=gear[7].val,time_utc=int(time.time()))
 
         # Add resized thumbnails and json to duplicate gears
         elif len(result) == 3:

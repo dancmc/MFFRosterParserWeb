@@ -232,7 +232,6 @@ class GearValue:
         self.type = ""
         self.val = 0.
         self.pref = False
-        self.percent = 0.
 
 
 class Attack:
@@ -438,7 +437,7 @@ def get_char_json(filepath):
             gear_num = char_list[0]["gear_num"] - 1
             char.gear[gear_num] = get_gear(screenshot, rects.list_rect_gearstat)
             char.uniform = get_default_uni(char.id)
-
+            char.ocr_gear_num = gear_num
 
             return {"result_char": char, "filepath": filepath}
         else:
