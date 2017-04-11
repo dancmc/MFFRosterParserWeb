@@ -7,6 +7,7 @@ def get_db():
     # g._database =
     # db = getattr(g, '_database', None)
     # if db is None:
+
     db =  MySQLdb.connect(host=settings.DB_HOST,
                         user=settings.DB_USER,
                         passwd=settings.DB_PASSWD,
@@ -17,14 +18,13 @@ def get_db():
 def connect():
     try:
         db = get_db()
-        cur = db.cursor()
-        return cur
+        return db
     except:
         print("unable to connect")
 
 
 def get_chars_from_gear(ocr_output):
-    cur = connect()
+    cur = connect().cursor()
     result_list = list()
 
 
@@ -63,7 +63,7 @@ def get_chars_from_gear(ocr_output):
 
 
 def get_char_alias(char_name):
-    cur = connect()
+    cur = connect().cursor()
 
     data = (char_name,)
     SQL = "SELECT char_alias FROM mff WHERE %s = char_name"
@@ -85,7 +85,7 @@ def get_char_alias(char_name):
     return char_alias
 
 def get_uniform_alias(uni_name):
-    cur = connect()
+    cur = connect().cursor()
 
     data = (uni_name,)
     SQL = "SELECT uni_alias FROM mff WHERE %s = uni_name"
@@ -108,7 +108,7 @@ def get_uniform_alias(uni_name):
     return uni_alias
 
 def get_default_uni(char_alias):
-    cur = connect()
+    cur = connect().cursor()
 
     data = (char_alias,)
     SQL = "SELECT uni_alias FROM mff WHERE %s = char_alias LIMIT 1"
@@ -118,3 +118,12 @@ def get_default_uni(char_alias):
 
     cur.close()
     return default_uni
+
+def insert_log(sql, data):
+    db = connect()
+    cur = db.cursor()
+    cur.execute(sql, data)
+
+    db.commit()
+    cur.close()
+
