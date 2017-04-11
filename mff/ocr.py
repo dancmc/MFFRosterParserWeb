@@ -143,11 +143,7 @@ def binarise_color_image(im, wanted_rgbtuple=(255,255,255), threshold = 20, inve
     #     # output_img = cv2.dilate(output_img, kernel, iterations=1)
     #     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     #     output_img = cv2.erode(output_img, kernel, iterations=1)
-    #
-    #
-    #
-    #
-    #
+
         output_img = cv2.blur(output_img, (3, 3))
         # (Image.fromarray(output_img)).show()
     #
@@ -155,10 +151,6 @@ def binarise_color_image(im, wanted_rgbtuple=(255,255,255), threshold = 20, inve
     #     # output_img = 255* (cv2.cvtColor(output_img, cv2.COLOR_BGR2GRAY) ).astype('uint8')
     #     # print(output_img)
     #
-    #
-    #     #
-    #
-
     #
     #     # se1 = cv2.getStructuringElement(cv2.MORPH_RECT,(11,11))
     #     # se2 = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
@@ -224,7 +216,7 @@ class Ocr:
         self.api.SetImage(black_white_image)
 
         text = self.api.GetUTF8Text().lower().replace("%", "").replace("\n", "").replace("+", "")
-        print(text + "   " + str(datetime.now() - now))
+        # print(text + "   " + str(datetime.now() - now))
         return text
 
 
@@ -236,7 +228,7 @@ class Ocr:
         self.api.SetImage(black_white_image)
 
         text = self.api.GetUTF8Text().lower().replace("%", "").replace("\n", "").replace("+", "")
-        print(text +"   |" +str(datetime.now()-now))
+        # print(text +"   |" +str(datetime.now()-now))
         return text
 
 

@@ -84,12 +84,12 @@ def do_ocr(file_list):
                      val_7=None, type_8=None, val_8=None, filename=None, time_utc=None):
 
         nonlocal sql_count
-        sql_count+=1
+        sql_count += 1
         nonlocal sql_data_tuple
         sql_data_tuple += (char_alias, uni_alias, tier, phys_att, energy_att, atk_spd, crit_rate, crit_dam,
-                def_pen, ignore_dodge, phys_def, energy_def, hp, reco_rate, dodge, mv_spd, debuff,
-                scd, gear_name, type_1, val_1, type_2, val_2, type_3, val_3, type_4, val_4,
-                type_5, val_5, type_6, val_6, type_7, val_7, type_8, val_8, filename, time_utc)
+                           def_pen, ignore_dodge, phys_def, energy_def, hp, reco_rate, dodge, mv_spd, debuff,
+                           scd, gear_name, type_1, val_1, type_2, val_2, type_3, val_3, type_4, val_4,
+                           type_5, val_5, type_6, val_6, type_7, val_7, type_8, val_8, filename, time_utc)
 
     def log_result(result):
         print(result)
@@ -112,20 +112,21 @@ def do_ocr(file_list):
             final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
             print(char.ocr_gear_num)
             # sql logs
-            if char.ocr_gear_num<0:
+            if char.ocr_gear_num < 0:
                 generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, uni_alias=char.uniform,
                              tier=char.tier, phys_att=char.attack.physical, energy_att=char.attack.energy,
                              atk_spd=char.atkspeed, crit_rate=char.critrate, crit_dam=char.critdamage,
                              def_pen=char.defpen, ignore_dodge=char.ignore_dodge, phys_def=char.defense.physical,
                              energy_def=char.defense.energy, hp=char.hp, reco_rate=char.recorate, dodge=char.dodge,
                              mv_spd=char.movspeed, debuff=char.debuff, scd=char.scd, time_utc=int(time.time()))
-            else :
+            else:
                 gear = char.gear[char.ocr_gear_num]
                 generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, type_1=gear[0].type,
-                         val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val,type_3=gear[2].type,
-                         val_3=gear[2].val,type_4=gear[3].type, val_4=gear[3].val,type_5=gear[4].type,
-                         val_5=gear[4].val,type_6=gear[5].type, val_6=gear[5].val,type_7=gear[6].type,
-                         val_7=gear[6].val,type_8=gear[7].type, val_8=gear[7].val,time_utc=int(time.time()))
+                             val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val, type_3=gear[2].type,
+                             val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
+                             val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
+                             val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val,
+                             gear_name=result['char_list'][0]["gear_name"], time_utc=int(time.time()))
 
         # Add resized thumbnails and json to duplicate gears
         elif len(result) == 3:
@@ -145,11 +146,12 @@ def do_ocr(file_list):
             )
 
             # sql logs
-            generate_sql(time_utc=int(time.time()), filename=os.path.split(result["filepath"])[1], type_1=gear[0].type,
-                         val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val,type_3=gear[2].type,
-                         val_3=gear[2].val,type_4=gear[3].type, val_4=gear[3].val,type_5=gear[4].type,
-                         val_5=gear[4].val,type_6=gear[5].type, val_6=gear[5].val,type_7=gear[6].type,
-                         val_7=gear[6].val,type_8=gear[7].type, val_8=gear[7].val)
+            generate_sql(time_utc=int(time.time()), filename=os.path.split(result["filepath"])[1],
+                         gear_name=result['char_list'][0]["gear_name"], type_1=gear[0].type,
+                         val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val, type_3=gear[2].type,
+                         val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
+                         val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
+                         val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val)
 
     def process_images(validated_file_paths):
 
@@ -180,12 +182,11 @@ def do_ocr(file_list):
 
         val_list = []
         for i in range(sql_count):
-            val_list.append('(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)')
-        sql_statement = sql_statement+",".join(val_list)+";"
+            val_list.append(
+                '(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)')
+        sql_statement = sql_statement + ",".join(val_list) + ";"
 
-        print(sql_statement)
-        print(sql_data_tuple)
-        db.insert_log(sql_statement,sql_data_tuple)
+        db.insert_log(sql_statement, sql_data_tuple)
 
         return final
 
