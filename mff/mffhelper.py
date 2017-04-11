@@ -269,14 +269,10 @@ class Character:
         self.gear = [[GearValue() for i in range(8)] for j in range(4)]
         self.lastUpdate = 0
 
-        self.ocr_type = ""
-        self.ocr_gear_num = -1
 
     # remove last 2 attributes from state so jsonpickler does not serialise them
     def __getstate__(self):
         state = self.__dict__.copy()
-        del state['ocr_type']
-        del state['ocr_gear_num']
         return state
 
     def __setstate__(self, state):
@@ -418,18 +414,19 @@ def get_char_json(filepath):
         # char.debuff = greyscale_ocr(screenshot, rects.rect_debuff, 180)
         # char.scd = greyscale_ocr(screenshot, rects.rect_scd, 180)
 
-        return {"result_char": char, "filepath": filepath}
+        return {"result_char": char, "filepath": filepath, "gear_num":-1, "gear_name":None}
 
     elif greyscale_ocr(screenshot, rects.rect_check_gear_page, threshold=140).replace(" ", "") == "gear":
 
         gear_name = color_ocr_text(screenshot, rects.rect_gear_name, threshold=40, color=(255, 255, 255))
-
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)
         char_list = get_chars_from_gear(gear_name)
 
         # if managed to match to exactly 1 character, return character json, else :
         char = Character()
-        if len(char_list)==2:
+        gear_num = -1
+
+        if len(char_list)==0:
            return filepath
         if len(char_list) == 1:
             char.id = char_list[0]["char_alias"]
@@ -437,9 +434,8 @@ def get_char_json(filepath):
             gear_num = char_list[0]["gear_num"] - 1
             char.gear[gear_num] = get_gear(screenshot, rects.list_rect_gearstat)
             char.uniform = get_default_uni(char.id)
-            char.ocr_gear_num = gear_num
 
-            return {"result_char": char, "filepath": filepath}
+            return {"result_char": char, "filepath": filepath, "gear_num":gear_num, "gear_name":gear_name}
         else:
             # return (char_list, gear_stats_list) where gear_stats_list is a list of 8 GearValue objects
             gear_result = get_gear(screenshot, rects.list_rect_gearstat)

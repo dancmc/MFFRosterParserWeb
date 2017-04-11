@@ -104,15 +104,17 @@ def do_ocr(file_list):
 
             # sql logs
             generate_sql(filename=os.path.split(result)[1], time_utc=int(time.time()))
+            print("got here1")
 
         # Add resized thumbnails and json to successful
-        elif len(result) == 2:
+        elif len(result) == 4:
+
             char = result["result_char"]
             result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
             final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
-            print(char.ocr_gear_num)
+
             # sql logs
-            if char.ocr_gear_num < 0:
+            if result["gear_num"] < 0:
                 generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, uni_alias=char.uniform,
                              tier=char.tier, phys_att=char.attack.physical, energy_att=char.attack.energy,
                              atk_spd=char.atkspeed, crit_rate=char.critrate, crit_dam=char.critdamage,
@@ -120,13 +122,14 @@ def do_ocr(file_list):
                              energy_def=char.defense.energy, hp=char.hp, reco_rate=char.recorate, dodge=char.dodge,
                              mv_spd=char.movspeed, debuff=char.debuff, scd=char.scd, time_utc=int(time.time()))
             else:
-                gear = char.gear[char.ocr_gear_num]
+                gear = char.gear[result["gear_num"]]
                 generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, type_1=gear[0].type,
                              val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val, type_3=gear[2].type,
                              val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
                              val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
                              val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val,
-                             gear_name=result['char_list'][0]["gear_name"], time_utc=int(time.time()))
+                              gear_name=result["gear_name"], time_utc=int(time.time()))
+
 
         # Add resized thumbnails and json to duplicate gears
         elif len(result) == 3:
@@ -152,6 +155,7 @@ def do_ocr(file_list):
                          val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
                          val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
                          val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val)
+            print("got her3")
 
     def process_images(validated_file_paths):
 
@@ -165,6 +169,7 @@ def do_ocr(file_list):
         else:
             for i in validated_file_paths:
                 log_result(get_char_json(i))
+
 
         time_taken = str(time.time() - timer)
 
@@ -180,12 +185,15 @@ def do_ocr(file_list):
                         "type_5, val_5, type_6, val_6, type_7, val_7, type_8, val_8, filename, time_utc) " \
                         "VALUES "
 
+
         val_list = []
         for i in range(sql_count):
             val_list.append(
                 '(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)')
         sql_statement = sql_statement + ",".join(val_list) + ";"
 
+        print(sql_statement)
+        print(sql_data_tuple)
         db.insert_log(sql_statement, sql_data_tuple)
 
         return final
