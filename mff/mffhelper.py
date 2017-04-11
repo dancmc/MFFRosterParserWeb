@@ -7,9 +7,13 @@ from mff.databasehelper import *
 from mff.ocr import Ocr
 import math
 
-ASPECT_RATIO_169 = 1.777777
-ASPECT_RATIO_1610 = 1.6
-ASPECT_RATIO_43 = 1.3333333
+
+ASPECT_RATIO_16_9 = 1.777777
+ASPECT_RATIO_16_10 = 1.6
+ASPECT_RATIO_4_3 = 1.3333333
+ASPECT_RATIO_185_9 = 2.055555
+ASPECT_RATIO_15_10 = 1.5
+
 
 class UnsupportedRatioException(ValueError):
     pass
@@ -28,7 +32,7 @@ class Rects:
         def scale_rect(rect):
             return tuple(int(scale * i) for i in rect)
 
-        if math.isclose(ASPECT_RATIO_169, aspect, rel_tol=0.04):
+        if math.isclose(ASPECT_RATIO_16_9, aspect, rel_tol=0.04):
             scale = width / 1920
             print(scale)
 
@@ -65,42 +69,116 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((400, 564, 1024, 603)))
             self.list_rect_gearstat.append(scale_rect((400, 606, 1024, 646)))
 
-        elif math.isclose(ASPECT_RATIO_1610, aspect, rel_tol=0.04):
-            self.rect_check_details_page = scale_rect((586, 184, 733, 223))
-            self.rect_check_gear_page = scale_rect((156, 23, 313, 74))
-            self.rect_gear_name = scale_rect((387, 143, 1018, 187))
+        elif math.isclose(ASPECT_RATIO_16_10, aspect, rel_tol=0.04):
+            scale = width / 1600
+            print(scale)
 
-            self.rect_tier = scale_rect((460, 393, 555, 427))
-            self.rect_char = scale_rect((104, 479, 546, 520))
-            self.rect_uni = scale_rect((108, 523, 554, 560))
-            self.rect_phys_att = scale_rect((911, 240, 1186, 280))
-            self.rect_energy_att = scale_rect((911, 280, 1186, 327))
-            self.rect_atk_spd = scale_rect((911, 327, 1186, 374))
-            self.rect_crit_rate = scale_rect((911, 374, 1186, 423))
-            self.rect_crit_dam = scale_rect((911, 423, 1186, 468))
-            self.rect_def_pen = scale_rect((911, 468, 1186, 517))
-            self.rect_ignore_dodge = scale_rect((911, 517, 1186, 568))
-            self.rect_phys_def = scale_rect((1530, 238, 1816, 280))
-            self.rect_energy_def = scale_rect((1530, 280, 1816, 329))
-            self.rect_hp = scale_rect((1530, 329, 1816, 376))
-            self.rect_recorate = scale_rect((1530, 376, 1816, 421))
-            self.rect_dodge = scale_rect((1530, 421, 1816, 472))
-            self.rect_mv_spd = scale_rect((1541, 810, 1814, 847))
-            self.rect_debuff = scale_rect((1653, 856, 1816, 895))
-            self.rect_scd = scale_rect((1666, 903, 1816, 937))
+            self.rect_check_details_page = scale_rect((469, 183, 588, 215))
+            self.rect_check_gear_page = scale_rect((143, 15, 274, 67))
+            self.rect_gear_name = scale_rect((285, 147, 859, 186))
+
+            self.rect_tier = scale_rect((352, 367, 442, 400))
+            self.rect_char = scale_rect((41, 446, 441, 482))
+            self.rect_uni = scale_rect((41, 482, 441, 520))
+            self.rect_phys_att = scale_rect((470, 230, 1000, 268))
+            self.rect_energy_att = scale_rect((470, 268, 1000, 313))
+            self.rect_atk_spd = scale_rect((470, 313, 1000, 354))
+            self.rect_crit_rate = scale_rect((470, 354, 1000, 396))
+            self.rect_crit_dam = scale_rect((470, 396, 1000, 437))
+            self.rect_def_pen = scale_rect((470, 437, 1000, 482))
+            self.rect_ignore_dodge = scale_rect((470, 482, 1000, 522))
+            self.rect_phys_def = scale_rect((1028, 231, 1560, 271))
+            self.rect_energy_def = scale_rect((1028, 271, 1560, 313))
+            self.rect_hp = scale_rect((1028, 313, 1560, 354))
+            self.rect_recorate = scale_rect((1028, 354, 1560, 397))
+            self.rect_dodge = scale_rect((1028, 397, 1560, 439))
+            self.rect_mv_spd = scale_rect((1028, 738, 1560, 778))
+            self.rect_debuff = scale_rect((1028, 778, 1560, 817))
+            self.rect_scd = scale_rect((1028, 817, 1560, 860))
 
             self.list_rect_gearstat = list()
-            self.list_rect_gearstat.append(scale_rect((400, 304, 1024, 349)))
-            self.list_rect_gearstat.append(scale_rect((400, 348, 1024, 384)))
-            self.list_rect_gearstat.append(scale_rect((400, 390, 1024, 432)))
-            self.list_rect_gearstat.append(scale_rect((400, 434, 1024, 475)))
-            self.list_rect_gearstat.append(scale_rect((400, 477, 1024, 517)))
-            self.list_rect_gearstat.append(scale_rect((400, 521, 1024, 559)))
-            self.list_rect_gearstat.append(scale_rect((400, 564, 1024, 603)))
-            self.list_rect_gearstat.append(scale_rect((400, 606, 1024, 646)))
+            self.list_rect_gearstat.append(scale_rect((300, 290, 859, 325)))
+            self.list_rect_gearstat.append(scale_rect((300, 325, 859, 365)))
+            self.list_rect_gearstat.append(scale_rect((300, 365, 859, 405)))
+            self.list_rect_gearstat.append(scale_rect((300, 405, 859, 443)))
+            self.list_rect_gearstat.append(scale_rect((300, 443, 859, 479)))
+            self.list_rect_gearstat.append(scale_rect((300, 479, 859, 518)))
+            self.list_rect_gearstat.append(scale_rect((300, 518, 859, 556)))
+            self.list_rect_gearstat.append(scale_rect((300, 556, 859, 596)))
 
-        elif math.isclose(ASPECT_RATIO_43, aspect, rel_tol=0.04):
-            return
+        elif math.isclose(ASPECT_RATIO_4_3, aspect, rel_tol=0.04):
+            scale = width / 1778
+            print(scale)
+
+            self.rect_check_details_page = scale_rect((520, 316, 655, 355))
+            self.rect_check_gear_page = scale_rect((158, 16, 298, 77))
+            self.rect_gear_name = scale_rect((325, 273, 960, 320))
+
+            self.rect_tier = scale_rect((395, 515, 490, 555))
+            self.rect_char = scale_rect((43, 604, 489, 647))
+            self.rect_uni = scale_rect((43, 647, 490, 683))
+            self.rect_phys_att = scale_rect((520, 368, 1113, 411))
+            self.rect_energy_att = scale_rect((520, 411, 1113, 459))
+            self.rect_atk_spd = scale_rect((520, 459, 1113, 506))
+            self.rect_crit_rate = scale_rect((520, 506, 1113, 553))
+            self.rect_crit_dam = scale_rect((520, 553, 1113, 597))
+            self.rect_def_pen = scale_rect((520, 597, 1113, 645))
+            self.rect_ignore_dodge = scale_rect((520, 645, 1113, 691))
+            self.rect_phys_def = scale_rect((1143, 369, 1736, 412))
+            self.rect_energy_def = scale_rect((1143, 412, 1736, 458))
+            self.rect_hp = scale_rect((1143, 458, 1736, 504))
+            self.rect_recorate = scale_rect((1143, 504, 1736, 552))
+            self.rect_dodge = scale_rect((1143, 552, 1736, 602))
+            self.rect_mv_spd = scale_rect((1143, 931, 1736, 977))
+            self.rect_debuff = scale_rect((1143, 977, 1736, 1022))
+            self.rect_scd = scale_rect((1143, 1022, 1736, 1066))
+
+            self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((337, 434, 959, 474)))
+            self.list_rect_gearstat.append(scale_rect((337, 474, 959, 518)))
+            self.list_rect_gearstat.append(scale_rect((337, 518, 959, 560)))
+            self.list_rect_gearstat.append(scale_rect((337, 560, 959, 602)))
+            self.list_rect_gearstat.append(scale_rect((337, 602, 959, 646)))
+            self.list_rect_gearstat.append(scale_rect((337, 646, 959, 686)))
+            self.list_rect_gearstat.append(scale_rect((337, 686, 959, 730)))
+            self.list_rect_gearstat.append(scale_rect((337, 730, 959, 772)))
+
+        elif math.isclose(ASPECT_RATIO_185_9, aspect, rel_tol=0.04):
+            scale = width / 1776
+            print(scale)
+
+            self.rect_check_details_page = scale_rect((590, 146, 698, 176))
+            self.rect_check_gear_page = scale_rect((127, 17, 248, 58))
+            self.rect_gear_name = scale_rect((427, 114, 948, 155))
+
+            self.rect_tier = scale_rect((487, 314, 564, 343))
+            self.rect_char = scale_rect((202, 384, 564, 416))
+            self.rect_uni = scale_rect((202, 416, 564, 447))
+            self.rect_phys_att = scale_rect((590, 190, 1069, 224))
+            self.rect_energy_att = scale_rect((590, 224, 1069, 263))
+            self.rect_atk_spd = scale_rect((590, 263, 1069, 301))
+            self.rect_crit_rate = scale_rect((590, 301, 1069, 341))
+            self.rect_crit_dam = scale_rect((590, 341, 1069, 377))
+            self.rect_def_pen = scale_rect((590, 377, 1069, 413))
+            self.rect_ignore_dodge = scale_rect((590, 413, 1069, 451))
+            self.rect_phys_def = scale_rect((1093, 188, 1572, 225))
+            self.rect_energy_def = scale_rect((1093, 225, 1572, 265))
+            self.rect_hp = scale_rect((1093, 265, 1572, 301))
+            self.rect_recorate = scale_rect((1093, 301, 1572, 339))
+            self.rect_dodge = scale_rect((1093, 339, 1572, 377))
+            self.rect_mv_spd = scale_rect((1093, 646, 1572, 682))
+            self.rect_debuff = scale_rect((1093, 682, 1572, 720))
+            self.rect_scd = scale_rect((1093, 720, 1572, 756))
+
+            self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((439, 243, 942, 277)))
+            self.list_rect_gearstat.append(scale_rect((439, 277, 942, 310)))
+            self.list_rect_gearstat.append(scale_rect((439, 310, 942, 346)))
+            self.list_rect_gearstat.append(scale_rect((439, 346, 942, 379)))
+            self.list_rect_gearstat.append(scale_rect((439, 379, 942, 414)))
+            self.list_rect_gearstat.append(scale_rect((439, 414, 942, 447)))
+            self.list_rect_gearstat.append(scale_rect((439, 447, 942, 482)))
+            self.list_rect_gearstat.append(scale_rect((439, 482, 942, 520)))
 
         else:
             raise UnsupportedRatioException
@@ -217,8 +295,8 @@ def get_gear(screenshot, rects):
 
     # split gear state rectangle into left and right
     def split_gear_rect(rect):
-        return ((rect[0], rect[1], int((rect[2] - rect[0]) * 0.8 + rect[0]), rect[3]),
-                (rect[2] - int((rect[2] - rect[0]) * 0.2), rect[1], rect[2], rect[3]))
+        return ((rect[0], rect[1], int((rect[2] - rect[0]) * 0.7 + rect[0]), rect[3]),
+                (rect[2] - int((rect[2] - rect[0]) * 0.3), rect[1], rect[2], rect[3]))
 
     def do_ocr(image, rect):
         stat_rects = split_gear_rect(rect)
@@ -226,16 +304,19 @@ def get_gear(screenshot, rects):
         right_rect = stat_rects[1]
 
         type = ""
-        raw_type = greyscale_ocr(image, left_rect,  threshold=120).replace(" ", "").lower()
+        raw_type = greyscale_ocr(image, left_rect,  threshold=110).replace(" ", "").lower()
         if raw_type != "":
             for i, item in enumerate(list_gear_statname):
                 if item in raw_type:
                     type = list_gear_val[i]
+                    break
             if type == "":
                 for i, item in enumerate(list_gear_statname):
                     if Levenshtein.distance(item, raw_type) < 3:
                         type = list_gear_val[i]
-        val = color_ocr(image, right_rect, color=(10, 18, 35), threshold=60, inverted_colors=True, erode=True ).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
+                        break
+
+        val = color_ocr(image, right_rect, color=(10, 18, 35), threshold=80, inverted_colors=True, erode=True ).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4").replace("s", "5")
         # val = greyscale_ocr(image, right_rect, threshold=145).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
         if val != "":
             try:
@@ -276,32 +357,55 @@ def get_char_json(filepath):
     except UnsupportedRatioException:
         return None
 
-    if greyscale_ocr(screenshot, rects.rect_check_details_page, threshold=100) == "attack":
+    if greyscale_ocr(screenshot, rects.rect_check_details_page, threshold=120).replace(" ", "") == "attack":
 
         char = Character()
 
-        char.tier = 2 if ("2" in color_ocr(screenshot, rects.rect_tier, (8, 20, 34), 50, inverted_colors=True, erode=True)) else 1
-        char.id = get_char_alias(greyscale_ocr(screenshot, rects.rect_char, 180))
+
+        char.tier = 2 if ("2" in color_ocr(screenshot, rects.rect_tier, (8, 20, 34), threshold=80, inverted_colors=True, erode=True, ).replace("z", "2")) else 1
+        char.id = get_char_alias(greyscale_ocr(screenshot, rects.rect_char, 220))
         char.uniform = get_uniform_alias(greyscale_ocr(screenshot, rects.rect_uni, 180))
-        char.attack.physical = color_ocr(screenshot, rects.rect_phys_att, (255,255,255))
-        char.attack.energy = color_ocr(screenshot, rects.rect_energy_att, (255,255,255))
-        char.atkspeed = color_ocr(screenshot, rects.rect_atk_spd, (255,255,255))
-        char.critrate = color_ocr(screenshot, rects.rect_crit_rate, (255,255,255))
-        char.critdamage = color_ocr(screenshot, rects.rect_crit_dam, (255,255,255))
-        char.defpen = color_ocr(screenshot, rects.rect_def_pen, (255,255,255))
-        char.ignore_dodge = color_ocr(screenshot, rects.rect_ignore_dodge, (255,255,255))
-        char.defense.physical = color_ocr(screenshot, rects.rect_phys_def, (255,255,255))
-        char.defense.energy = color_ocr(screenshot, rects.rect_energy_def, (255,255,255))
-        char.hp = color_ocr(screenshot, rects.rect_hp, (255,255,255))
-        char.recorate = color_ocr(screenshot, rects.rect_recorate, (255,255,255))
-        char.dodge = color_ocr(screenshot, rects.rect_dodge, (255,255,255))
-        char.movspeed = color_ocr(screenshot, rects.rect_mv_spd, (255,255,255))
-        char.debuff = color_ocr(screenshot, rects.rect_debuff, (255,255,255))
-        char.scd = color_ocr(screenshot, rects.rect_scd, (255,255,255))
+
+        t = 40
+        erode = True
+        char.attack.physical = color_ocr(screenshot, rects.rect_phys_att, (255,255,255), threshold=t, erode=erode)
+        char.attack.energy = color_ocr(screenshot, rects.rect_energy_att, (255,255,255), threshold = t, erode = erode)
+        char.atkspeed = color_ocr(screenshot, rects.rect_atk_spd, (255,255,255), threshold=t, erode = erode)
+        char.critrate = color_ocr(screenshot, rects.rect_crit_rate, (255,255,255), threshold=t, erode = erode)
+        char.critdamage = color_ocr(screenshot, rects.rect_crit_dam, (255,255,255), threshold=t, erode = erode)
+        char.defpen = color_ocr(screenshot, rects.rect_def_pen, (255,255,255), threshold=t, erode = erode)
+        char.ignore_dodge = color_ocr(screenshot, rects.rect_ignore_dodge, (255,255,255), threshold=t, erode = erode)
+        char.defense.physical = color_ocr(screenshot, rects.rect_phys_def, (255,255,255), threshold=t, erode = erode)
+        char.defense.energy = color_ocr(screenshot, rects.rect_energy_def, (255,255,255), threshold=t, erode = erode)
+        char.hp = color_ocr(screenshot, rects.rect_hp, (255,255,255), threshold=t, erode = erode)
+        char.recorate = color_ocr(screenshot, rects.rect_recorate, (255,255,255), threshold=t, erode = erode)
+        char.dodge = color_ocr(screenshot, rects.rect_dodge, (255,255,255), threshold=t, erode = erode)
+        char.movspeed = color_ocr(screenshot, rects.rect_mv_spd, (255,255,255), threshold=t, erode = erode)
+        char.debuff = color_ocr(screenshot, rects.rect_debuff, (255,255,255), threshold=t, erode = erode)
+        char.scd = color_ocr(screenshot, rects.rect_scd, (255,255,255), threshold=t, erode = erode)
+
+        # char.tier = 2 if ("2" in greyscale_ocr(screenshot, rects.rect_tier, 180)) else 1
+        # char.id = get_char_alias(greyscale_ocr(screenshot, rects.rect_char, 180))
+        # char.uniform = get_uniform_alias(greyscale_ocr(screenshot, rects.rect_uni, 180))
+        # char.attack.physical = greyscale_ocr(screenshot, rects.rect_phys_att, 160)
+        # char.attack.energy = greyscale_ocr(screenshot, rects.rect_energy_att, 180)
+        # char.atkspeed = greyscale_ocr(screenshot, rects.rect_atk_spd, 180)
+        # char.critrate = greyscale_ocr(screenshot, rects.rect_crit_rate, 180)
+        # char.critdamage = greyscale_ocr(screenshot, rects.rect_crit_dam, 180)
+        # char.defpen = greyscale_ocr(screenshot, rects.rect_def_pen, 180)
+        # char.ignore_dodge = greyscale_ocr(screenshot, rects.rect_ignore_dodge, 180)
+        # char.defense.physical = greyscale_ocr(screenshot, rects.rect_phys_def, 180)
+        # char.defense.energy = greyscale_ocr(screenshot, rects.rect_energy_def, 180)
+        # char.hp = greyscale_ocr(screenshot, rects.rect_hp, 180)
+        # char.recorate = greyscale_ocr(screenshot, rects.rect_recorate, 180)
+        # char.dodge = greyscale_ocr(screenshot, rects.rect_dodge, 180)
+        # char.movspeed = greyscale_ocr(screenshot, rects.rect_mv_spd, 180)
+        # char.debuff = greyscale_ocr(screenshot, rects.rect_debuff, 180)
+        # char.scd = greyscale_ocr(screenshot, rects.rect_scd, 180)
 
         return {"result_json": '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False), "filepath": filepath}
 
-    elif greyscale_ocr(screenshot, rects.rect_check_gear_page, threshold=140) == "gear":
+    elif greyscale_ocr(screenshot, rects.rect_check_gear_page, threshold=140).replace(" ", "") == "gear":
 
         gear_name = color_ocr(screenshot, rects.rect_gear_name, threshold=40, color=(255,255,255))
 

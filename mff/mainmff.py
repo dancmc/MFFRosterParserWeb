@@ -1,5 +1,5 @@
 import base64
-import datetime
+
 import imghdr
 import multiprocessing
 import os
@@ -8,6 +8,7 @@ import time
 import jsonpickle
 from PIL import Image
 import uuid
+from wand.image import Image as WImage
 
 from werkzeug.utils import secure_filename
 from mff.mffhelper import get_char_json
@@ -16,6 +17,8 @@ UPLOAD_FOLDER = '/var/www/app_dancmc/mff/uploaded_screenshots'
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 def do_ocr(file_list):
+    timer = time.time()
+
     class ResultJSON:
         def __init__(self):
             self.time_taken = 0
@@ -89,11 +92,10 @@ def do_ocr(file_list):
                 {"thumbnail_base64": resize_and_to_base64(result['filepath']),
                  "gear_name": result['char_list'][0]["gear_name"],
                  "gear_json": result["gear_json"],
-                 "chars": char_dict}
+                 "char_list": char_dict}
             )
 
     def process_images(validated_file_paths):
-        time = datetime.datetime.now()
 
         # Processing single file takes 0.2-0.5 secs, mp overhead only worth it >3
         if len(validated_file_paths) > 3:
@@ -106,13 +108,14 @@ def do_ocr(file_list):
             for i in validated_file_paths:
                 log_result(get_char_json(i))
 
-        time_taken = str(datetime.datetime.now() - time)
+        time_taken = str(time.time() - timer)
 
         result_json.time_taken = time_taken
         result_json.number_total_files = num_total_files
         result_json.number_invalid_files = num_invalid_images
 
-        return jsonpickle.encode(result_json, unpicklable=False)
+        final = jsonpickle.encode(result_json, unpicklable=False)
+        return final
 
     # request.files returns an immutable multidict
     ## request.files['file'] only retrieves the first value
@@ -146,7 +149,11 @@ def do_ocr(file_list):
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     for file in file_list:
         file_path =UPLOAD_FOLDER+"/" +secure_filename(file.filename)
-        file.save(file_path)
+        # file.save(file_path)
+
+        with WImage(file=file, resolution=600) as image:
+            image.compression_quality = 95
+            image.save(filename=file_path)
         file_paths.append(file_path)
 
     # pass on
