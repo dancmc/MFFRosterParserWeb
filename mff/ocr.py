@@ -42,7 +42,7 @@ def binarise_greyscale_image(im, threshold=150):
 
     return rgbimg
 
-def binarise_color_image(im, wanted_rgbtuple=(255,255,255), inverted_colors=False):
+def binarise_color_image(im, wanted_rgbtuple=(255,255,255), threshold=120, inverted_colors=False):
 
     output_img = PIL_to_opencv(im)
 
@@ -51,7 +51,6 @@ def binarise_color_image(im, wanted_rgbtuple=(255,255,255), inverted_colors=Fals
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     output_img = cv2.erode(output_img, kernel, iterations=1)
 
-    threshold=135
 
     lower_color = numpy.array([max(0, x-threshold) for x in wanted_rgbtuple])[::-1]
     upper_color = numpy.array([min(255, x + threshold) for x in wanted_rgbtuple])[::-1]
@@ -91,9 +90,9 @@ class Ocr:
         return text
 
 
-    def ocr_using_color_similarity(self, image, color=(255,255,255), inverted_colors=False):
+    def ocr_using_color_similarity(self, image, color=(255,255,255), threshold=120, inverted_colors=False):
 
-        black_white_image = binarise_color_image(image, color, inverted_colors)
+        black_white_image = binarise_color_image(image, wanted_rgbtuple=color, threshold=threshold, inverted_colors=inverted_colors)
         # self.api.SetVariable("tessedit_char_whitelist", "1234567890+%.")
         now = datetime.now()
         self.api.SetImage(black_white_image)
