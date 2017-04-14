@@ -7,9 +7,9 @@
 
 ## Technical details
 #### File uploads  
-* Files with width 1600 and above perform significantly better with the OCR engine  
+* Most image sizes should work now that Tesseract is trained, tested with width 800 & above
   * I'm currently using this library for image compression : https://www.npmjs.com/package/compress.js
-  * with settings <200kB, quality 0.85, maxWidth/Height 2000, resize true
+  * with settings <100kB, quality 0.85, maxWidth/Height 2000, resize true
   * any compression method which preserves image resolution with decent quality should work
 * Working resolutions
   * 16:9, 16:10, 4:3, 18.5:9, will add 3:2 soon, accepting requests
