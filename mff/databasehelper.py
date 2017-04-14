@@ -4,9 +4,6 @@ import MySQLdb
 
 
 def get_db():
-    # g._database =
-    # db = getattr(g, '_database', None)
-    # if db is None:
 
     db =  MySQLdb.connect(host=settings.DB_HOST,
                         user=settings.DB_USER,

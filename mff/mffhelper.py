@@ -282,21 +282,21 @@ class Character:
 def greyscale_ocr(image, rect, threshold=140):
     return ocr_ob.ocr_using_greyscale(image.crop(rect), threshold)
 
-def color_ocr_text(image, rect, color=(255, 255, 255), threshold=20, inverted_colors=False, erode=False):
-    return ocr_ob.ocr_using_color_similarity(image.crop(rect), color, threshold,  inverted_colors, erode)
+def color_ocr_text(image, rect, color=(255, 255, 255), inverted_colors=False):
+    return ocr_ob.ocr_using_color_similarity(image.crop(rect), color, inverted_colors)
 
-def color_ocr_int(image, rect, color=(255,255,255), threshold=20, inverted_colors=False, erode=False):
-    num = ocr_ob.ocr_using_color_similarity(image.crop(rect), color, threshold,  inverted_colors, erode)
+def color_ocr_int(image, rect, color=(255,255,255), inverted_colors=False):
+    num = ocr_ob.ocr_using_color_similarity(image.crop(rect), color,  inverted_colors)
     try:
-        num = int(num)
+        num = int(num.replace(" ", "").replace("%", "").replace("+", "").replace('"', "4").replace("s", "5").replace("o", "0").replace("d", "0").replace("z","2"))
     except:
         num = 0
     return num
 
-def color_ocr_float(image, rect, color=(255,255,255), threshold=20, inverted_colors=False, erode=False):
-    num = ocr_ob.ocr_using_color_similarity(image.crop(rect), color, threshold, inverted_colors, erode)
+def color_ocr_float(image, rect, color=(255,255,255), inverted_colors=False):
+    num = ocr_ob.ocr_using_color_similarity(image.crop(rect), color, inverted_colors)
     try:
-        num = float(num)
+        num = float(num.replace(" ", "").replace("%", "").replace("+", "").replace('"', "4").replace("s", "5").replace("o", "0").replace("d", "0").replace("z","2"))
     except:
         num = 0.
     return num
@@ -314,21 +314,20 @@ def get_gear(screenshot, rects):
         left_rect = stat_rects[0]
         right_rect = stat_rects[1]
 
-        type = ""
-        raw_type = greyscale_ocr(image, left_rect,  threshold=110).replace(" ", "").lower()
+        gear_type = ""
+        raw_type = color_ocr_text(image, left_rect, color=(10, 18, 35)).replace(" ", "").lower()
         if raw_type != "":
             for i, item in enumerate(list_gear_statname):
                 if item in raw_type:
-                    type = list_gear_val[i]
+                    gear_type = list_gear_val[i]
                     break
-            if type == "":
+            if gear_type == "":
                 for i, item in enumerate(list_gear_statname):
                     if Levenshtein.distance(item, raw_type) < 3:
-                        type = list_gear_val[i]
+                        gear_type = list_gear_val[i]
                         break
 
-        val = color_ocr_text(image, right_rect, color=(10, 18, 35), threshold=80, inverted_colors=True, erode=True).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4").replace("s", "5")
-        # val = greyscale_ocr(image, right_rect, threshold=145).replace(" ", "").replace("%", "").replace("+", "").replace('"', "4")
+        val = color_ocr_text(image, right_rect, color=(10, 18, 35), inverted_colors=True)
         if val != "":
             try:
                 val = float(val)
@@ -337,7 +336,7 @@ def get_gear(screenshot, rects):
         else:
             val = 0.
 
-        return type, val
+        return gear_type, val
 
     gear = [GearValue() for i in range(8)]
     for i, item in enumerate(rects):
@@ -361,70 +360,47 @@ def get_char_json(filepath):
     time = datetime.datetime.now()
     width = screenshot.size[0]
     height = screenshot.size[1]
-    # define rects based on aspect ratio
 
+    # define rects based on aspect ratio
     try:
         rects = Rects(width, height)
     except UnsupportedRatioException:
         return None
 
-    if greyscale_ocr(screenshot, rects.rect_check_details_page, threshold=120).replace(" ", "") == "attack":
+    if color_ocr_text(screenshot, rects.rect_check_details_page, color=(10, 18, 35), inverted_colors=True).replace(" ", "") == "attack":
 
         char = Character()
 
-        char.tier = 2 if ("2" in color_ocr_text(screenshot, rects.rect_tier, (8, 20, 34), threshold=80, inverted_colors=True, erode=True, ).replace("z", "2")) else 1
-        char.id = get_char_alias(greyscale_ocr(screenshot, rects.rect_char, 220))
-        char.uniform = get_uniform_alias(greyscale_ocr(screenshot, rects.rect_uni, 180))
+        char.tier = 2 if ("2" in color_ocr_text(screenshot, rects.rect_tier, (8, 20, 34), inverted_colors=True ).replace("z", "2")) else 1
+        char.id = get_char_alias(color_ocr_text(screenshot, rects.rect_char, color=(10, 18, 35), inverted_colors=True))
+        char.uniform = get_uniform_alias(color_ocr_text(screenshot, rects.rect_uni,color=(10, 18, 35), inverted_colors=True))
 
-        t = 40
-        erode = True
-
-        char.attack.physical = color_ocr_int(screenshot, rects.rect_phys_att, (255, 255, 255), threshold=t, erode=erode)
-        char.attack.energy = color_ocr_int(screenshot, rects.rect_energy_att, (255, 255, 255), threshold = t, erode = erode)
-        char.atkspeed = color_ocr_float(screenshot, rects.rect_atk_spd, (255, 255, 255), threshold=t, erode = erode)
-        char.critrate = color_ocr_float(screenshot, rects.rect_crit_rate, (255, 255, 255), threshold=t, erode = erode)
-        char.critdamage = color_ocr_float(screenshot, rects.rect_crit_dam, (255, 255, 255), threshold=t, erode = erode)
-        char.defpen = color_ocr_float(screenshot, rects.rect_def_pen, (255, 255, 255), threshold=t, erode = erode)
-        char.ignore_dodge = color_ocr_float(screenshot, rects.rect_ignore_dodge, (255, 255, 255), threshold=t, erode = erode)
-        char.defense.physical = color_ocr_int(screenshot, rects.rect_phys_def, (255, 255, 255), threshold=t, erode = erode)
-        char.defense.energy = color_ocr_int(screenshot, rects.rect_energy_def, (255, 255, 255), threshold=t, erode = erode)
-        char.hp = color_ocr_int(screenshot, rects.rect_hp, (255, 255, 255), threshold=t, erode = erode)
-        char.recorate = color_ocr_float(screenshot, rects.rect_recorate, (255, 255, 255), threshold=t, erode = erode)
-        char.dodge = color_ocr_float(screenshot, rects.rect_dodge, (255, 255, 255), threshold=t, erode = erode)
-        char.movspeed = color_ocr_float(screenshot, rects.rect_mv_spd, (255, 255, 255), threshold=t, erode = erode)
-        char.debuff = color_ocr_float(screenshot, rects.rect_debuff, (255, 255, 255), threshold=t, erode = erode)
-        char.scd = color_ocr_float(screenshot, rects.rect_scd, (255, 255, 255), threshold=t, erode = erode)
-
-        # char.tier = 2 if ("2" in greyscale_ocr(screenshot, rects.rect_tier, 180)) else 1
-        # char.id = get_char_alias(greyscale_ocr(screenshot, rects.rect_char, 180))
-        # char.uniform = get_uniform_alias(greyscale_ocr(screenshot, rects.rect_uni, 180))
-        # char.attack.physical = greyscale_ocr(screenshot, rects.rect_phys_att, 160)
-        # char.attack.energy = greyscale_ocr(screenshot, rects.rect_energy_att, 180)
-        # char.atkspeed = greyscale_ocr(screenshot, rects.rect_atk_spd, 180)
-        # char.critrate = greyscale_ocr(screenshot, rects.rect_crit_rate, 180)
-        # char.critdamage = greyscale_ocr(screenshot, rects.rect_crit_dam, 180)
-        # char.defpen = greyscale_ocr(screenshot, rects.rect_def_pen, 180)
-        # char.ignore_dodge = greyscale_ocr(screenshot, rects.rect_ignore_dodge, 180)
-        # char.defense.physical = greyscale_ocr(screenshot, rects.rect_phys_def, 180)
-        # char.defense.energy = greyscale_ocr(screenshot, rects.rect_energy_def, 180)
-        # char.hp = greyscale_ocr(screenshot, rects.rect_hp, 180)
-        # char.recorate = greyscale_ocr(screenshot, rects.rect_recorate, 180)
-        # char.dodge = greyscale_ocr(screenshot, rects.rect_dodge, 180)
-        # char.movspeed = greyscale_ocr(screenshot, rects.rect_mv_spd, 180)
-        # char.debuff = greyscale_ocr(screenshot, rects.rect_debuff, 180)
-        # char.scd = greyscale_ocr(screenshot, rects.rect_scd, 180)
+        char.attack.physical = color_ocr_int(screenshot, rects.rect_phys_att, (255, 255, 255))
+        char.attack.energy = color_ocr_int(screenshot, rects.rect_energy_att, (255, 255, 255))
+        char.atkspeed = color_ocr_float(screenshot, rects.rect_atk_spd, (255, 255, 255))
+        char.critrate = color_ocr_float(screenshot, rects.rect_crit_rate, (255, 255, 255))
+        char.critdamage = color_ocr_float(screenshot, rects.rect_crit_dam, (255, 255, 255))
+        char.defpen = color_ocr_float(screenshot, rects.rect_def_pen, (255, 255, 255))
+        char.ignore_dodge = color_ocr_float(screenshot, rects.rect_ignore_dodge, (255, 255, 255))
+        char.defense.physical = color_ocr_int(screenshot, rects.rect_phys_def, (255, 255, 255))
+        char.defense.energy = color_ocr_int(screenshot, rects.rect_energy_def, (255, 255, 255))
+        char.hp = color_ocr_int(screenshot, rects.rect_hp, (255, 255, 255))
+        char.recorate = color_ocr_float(screenshot, rects.rect_recorate, (255, 255, 255))
+        char.dodge = color_ocr_float(screenshot, rects.rect_dodge, (255, 255, 255))
+        char.movspeed = color_ocr_float(screenshot, rects.rect_mv_spd, (255, 255, 255))
+        char.debuff = color_ocr_float(screenshot, rects.rect_debuff, (255, 255, 255))
+        char.scd = color_ocr_float(screenshot, rects.rect_scd, (255, 255, 255))
 
         return {"result_char": char, "filepath": filepath, "gear_num":-1, "gear_name":None}
 
-    elif greyscale_ocr(screenshot, rects.rect_check_gear_page, threshold=140).replace(" ", "") == "gear":
+    elif color_ocr_text(screenshot, rects.rect_check_gear_page,color=(10, 18, 35), inverted_colors=True).replace(" ", "") == "gear":
 
-        gear_name = color_ocr_text(screenshot, rects.rect_gear_name, threshold=40, color=(255, 255, 255))
+        gear_name = color_ocr_text(screenshot, rects.rect_gear_name, color=(255, 255, 255))
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)
         char_list = get_chars_from_gear(gear_name)
 
         # if managed to match to exactly 1 character, return character json, else :
         char = Character()
-        gear_num = -1
 
         if len(char_list)==0:
            return filepath
