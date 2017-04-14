@@ -7,7 +7,7 @@ $("#image_submit").submit(function (event) {
     event.preventDefault();
 
     var formData = new FormData();
-    var images = [...document.getElementById('images').files]
+    var images = Array.from(document.getElementById('images').files)
 
     if (images.length === 0) {
         const resultdiv = $("#result_div");

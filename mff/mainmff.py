@@ -96,6 +96,7 @@ def do_ocr(file_list):
         if result is None:
             nonlocal num_invalid_images
             num_invalid_images += 1
+            generate_sql()
 
 
         # Add resized thumbnails to failures
@@ -104,7 +105,6 @@ def do_ocr(file_list):
 
             # sql logs
             generate_sql(filename=os.path.split(result)[1], time_utc=int(time.time()))
-            print("got here1")
 
         # Add resized thumbnails and json to successful
         elif len(result) == 4:
@@ -155,7 +155,7 @@ def do_ocr(file_list):
                          val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
                          val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
                          val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val)
-            print("got her3")
+
 
     def process_images(validated_file_paths):
 
@@ -192,9 +192,10 @@ def do_ocr(file_list):
                 '(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)')
         sql_statement = sql_statement + ",".join(val_list) + ";"
 
-        print(sql_statement)
-        print(sql_data_tuple)
-        db.insert_log(sql_statement, sql_data_tuple)
+        try:
+            db.insert_log(sql_statement, sql_data_tuple)
+        except:
+            pass
 
         return final
 

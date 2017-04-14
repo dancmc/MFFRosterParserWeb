@@ -28,18 +28,18 @@ def mff_ocr():
 
 
 #### Comment out in production #####################################
-@app.before_request
-def start():
-    g.start = time.time()
-
-@app.after_request
-def end(r):
-    if app.debug == True:
-        r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0, public"
-        r.headers["Pragma"] = "no-cache"
-        r.headers["Expires"] = "0"
-        print(time.time()-g.start)
-        return r
+# @app.before_request
+# def start():
+#     g.start = time.time()
+#
+# @app.after_request
+# def end(r):
+#     if app.debug == True:
+#         r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0, public"
+#         r.headers["Pragma"] = "no-cache"
+#         r.headers["Expires"] = "0"
+#         print(time.time()-g.start)
+#         return r
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
