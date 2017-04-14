@@ -198,12 +198,6 @@ def do_ocr(file_list):
 
         return final
 
-    # request.files returns an immutable multidict
-    ## request.files['file'] only retrieves the first value
-    # if 'file' not in request.files:
-    #     # reroutes as a get request
-    #     print("file not in request.files")
-    #     return redirect(request.url)
 
     # validate file as image
     def get_ext(file):
@@ -230,11 +224,11 @@ def do_ocr(file_list):
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     for file in file_list:
         file_path = UPLOAD_FOLDER + "/" + secure_filename(file.filename)
-        # file.save(file_path)
+        file.save(file_path)
 
-        with WImage(file=file, resolution=600) as image:
-            image.compression_quality = 95
-            image.save(filename=file_path)
+        # with WImage(file=file, resolution=600) as image:
+        #     image.compression_quality = 95
+        #     image.save(filename=file_path)
         file_paths.append(file_path)
 
     # pass on

@@ -5,13 +5,20 @@ const compress = new Compress()
 $("#image_submit").submit(function (event) {
     event.preventDefault();
 
-    console.log("hi")
     var formData = new FormData();
     var images = [...document.getElementById('images').files]
 
-    console.log(images)
+    if (images.length === 0) {
+        const resultdiv = $("#result_div");
+        resultdiv.empty();
+        resultdiv.append("<h3>Please select 1 or more images</h3>");
+
+        return;
+    }
+
+
     compress.compress(images, {
-        size: 0.2, // the max size in MB, defaults to 2MB
+        size: 0.1, // the max size in MB, defaults to 2MB
         quality: 0.85, // the quality of the image, max is 1,
         maxWidth: 2000, // the max width of the output image, defaults to 1920px
         maxHeight: 1920, // the max height of the output image, defaults to 1920px
@@ -51,14 +58,14 @@ function sub(formData) {
             // show total time taken & file info
             const time = $("<div>Request took " + json.time_taken + "  seconds</div>");
             resultdiv.append(time);
-            $('<p />').text('Total files sent : '+ json.number_total_files).appendTo(resultdiv);
-            $('<p />').text('Invalid files : '+ json.number_invalid_files).appendTo(resultdiv);
-            $('<p />').text('Successes : '+ json.successful.length).appendTo(resultdiv);
-            $('<p />').text('Failures : '+ json.failures.length).appendTo(resultdiv);
-            $('<p />').text('Ambiguous gears : '+ json.duplicate_gears.length).appendTo(resultdiv);
+            $('<p />').text('Total files sent : ' + json.number_total_files).appendTo(resultdiv);
+            $('<p />').text('Invalid files : ' + json.number_invalid_files).appendTo(resultdiv);
+            $('<p />').text('Successes : ' + json.successful.length).appendTo(resultdiv);
+            $('<p />').text('Failures : ' + json.failures.length).appendTo(resultdiv);
+            $('<p />').text('Ambiguous gears : ' + json.duplicate_gears.length).appendTo(resultdiv);
 
             //========== asking about ambiguous gears ============
-            if(json.duplicate_gears.length >0) {
+            if (json.duplicate_gears.length > 0) {
                 resultdiv.append("<h2>Please choose</h2>");
             }
             json.duplicate_gears.forEach(function (dup) {
@@ -71,7 +78,7 @@ function sub(formData) {
                 for (let charalias in dup.char_list) {
                     let option = document.createElement("option");
                     option.value = charalias;
-                    option.text = charalias + " : " +dup.char_list[charalias];
+                    option.text = charalias + " : " + dup.char_list[charalias];
                     list.append(option)
                 }
 
@@ -86,11 +93,11 @@ function sub(formData) {
             });
 
             //========== showing successes =======================
-            if(json.successful.length >0) {
+            if (json.successful.length > 0) {
                 resultdiv.append("<h2>Successes</h2>");
             }
             json.successful.forEach(function (succ) {
-                for(let base64 in succ){
+                for (let base64 in succ) {
                     let newdiv = $('<div />');
 
                     let image = new Image();
@@ -104,17 +111,17 @@ function sub(formData) {
             });
 
             //========== showing failures ========================
-            if(json.failures.length >0) {
+            if (json.failures.length > 0) {
                 resultdiv.append("<h2>Failures</h2>");
             }
             json.failures.forEach(function (base64) {
-                    let newdiv = $('<div />');
+                let newdiv = $('<div />');
 
-                    let image = new Image();
-                    image.src = base64;
-                    newdiv.append(image);
-                    newdiv.append($('<p />'))
-                    resultdiv.append(newdiv);
+                let image = new Image();
+                image.src = base64;
+                newdiv.append(image);
+                newdiv.append($('<p />'))
+                resultdiv.append(newdiv);
             });
 
 
