@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request
 from flask_cors import cross_origin, CORS
 
-from .ocr_scripts.mainmff import do_ocr
+from ocr_scripts.mainmff import do_ocr
 
 app = Flask(__name__, template_folder="./templates")
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
 
-CORS(app, origins="mokhet.com")
+CORS(app, origins="www.mokhet.com")
 
 @app.route("/")
 def top_level():

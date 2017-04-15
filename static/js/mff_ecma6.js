@@ -9,6 +9,7 @@ function compressAll(mode) {
         const resultdiv = $("#result_div");
         resultdiv.empty();
         resultdiv.append("<h3>Please select 1 or more images</h3>");
+        console.log("multi")
         return;
     }
 
@@ -36,10 +37,16 @@ function compressAll(mode) {
 }
 
 
-$("#submit_multi").click(compressAll("multi")
+$("#submit_multi").click(function(){
+    compressAll("multi")
+    }
+
 );
 
-$("#submit_single").click(compressAll("single")
+$("#submit_single").click(function() {
+        compressAll("single")
+    }
+
 );
 
 function sub(formData, mode) {
