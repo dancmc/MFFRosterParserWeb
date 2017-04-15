@@ -1,12 +1,10 @@
 import datetime
-
-import Levenshtein
-import jsonpickle
-from PIL import Image
-from mff.databasehelper import *
-from mff.ocr import Ocr
 import math
 
+import Levenshtein
+from PIL import Image
+from .databasehelper import get_char_alias, get_uniform_alias, get_chars_from_gear, get_default_uni
+from .ocr import Ocr
 
 ASPECT_RATIO_16_9 = 1.777777
 ASPECT_RATIO_16_10 = 1.6
@@ -315,7 +313,7 @@ def get_gear(screenshot, rects):
         right_rect = stat_rects[1]
 
         gear_type = ""
-        raw_type = color_ocr_text(image, left_rect, color=(10, 18, 35), threshold=80, inverted_colors=True).replace(" ", "").lower()
+        raw_type = color_ocr_text(image, left_rect, color=(10, 18, 35), threshold=135, inverted_colors=True).replace(" ", "").lower()
         if raw_type != "":
             for i, item in enumerate(list_gear_statname):
                 if item in raw_type:
@@ -327,7 +325,7 @@ def get_gear(screenshot, rects):
                         gear_type = list_gear_val[i]
                         break
 
-        val = color_ocr_text(image, right_rect, color=(10, 18, 35), inverted_colors=True)
+        val = color_ocr_float(image, right_rect, color=(10, 18, 35), inverted_colors=True)
         if val != "":
             try:
                 val = float(val)
@@ -335,7 +333,6 @@ def get_gear(screenshot, rects):
                 val = 0.
         else:
             val = 0.
-
         return gear_type, val
 
     gear = [GearValue() for i in range(8)]
@@ -348,14 +345,14 @@ def get_char_json(filepath):
 
     screenshot = Image.open(filepath)
 
-    now = datetime.datetime.now()
+    # now = datetime.datetime.now()
     desiredwidth = 1920
     scale = desiredwidth / screenshot.size[0]
     if screenshot.size[0]< desiredwidth:
         screenshot= screenshot.resize((desiredwidth, int(scale*screenshot.size[1])), Image.NEAREST)
     elif screenshot.size[0]>desiredwidth:
         screenshot.thumbnail((int(screenshot.size[0]*scale), int(screenshot.size[1]*scale)))
-    print("scaled in "+str(datetime.datetime.now()-now))
+    # print("scaled in "+str(datetime.datetime.now()-now))
 
     time = datetime.datetime.now()
     width = screenshot.size[0]
@@ -365,7 +362,7 @@ def get_char_json(filepath):
     try:
         rects = Rects(width, height)
     except UnsupportedRatioException:
-        return None
+        return UnsupportedRatioException
 
     if color_ocr_text(screenshot, rects.rect_check_details_page, color=(10, 18, 35), inverted_colors=True).replace(" ", "") == "attack":
 
@@ -391,7 +388,7 @@ def get_char_json(filepath):
         char.debuff = color_ocr_float(screenshot, rects.rect_debuff, color=(255, 255, 255))
         char.scd = color_ocr_float(screenshot, rects.rect_scd, color=(255, 255, 255))
 
-        return {"result_char": char, "filepath": filepath, "gear_num":-1, "gear_name":None}
+        return {"type":"details", "result_char": char, "filepath": filepath}
 
     elif color_ocr_text(screenshot, rects.rect_check_gear_page,color=(10, 18, 35), inverted_colors=True).replace(" ", "") == "gear":
 
@@ -405,17 +402,17 @@ def get_char_json(filepath):
         if len(char_list)==0:
            return filepath
         if len(char_list) == 1:
-            char.id = char_list[0]["char_alias"]
-            # database returns gear numbers 1-4, have to zero it
-            gear_num = char_list[0]["gear_num"] - 1
-            char.gear[gear_num] = get_gear(screenshot, rects.list_rect_gearstat)
+            char.id = char_list[0]["id"]
+            # database returns gear numbers 1-4
+            gear_num = char_list[0]["gear_num"]
+            char.gear[gear_num-1] = get_gear(screenshot, rects.list_rect_gearstat)
             char.uniform = get_default_uni(char.id)
 
-            return {"result_char": char, "filepath": filepath, "gear_num":gear_num, "gear_name":gear_name}
+            return {"type":"gear", "result_char": char, "char_list":char_list,  "gear_num":gear_num, "gear_name":gear_name, "filepath": filepath}
         else:
             # return (char_list, gear_stats_list) where gear_stats_list is a list of 8 GearValue objects
             gear_result = get_gear(screenshot, rects.list_rect_gearstat)
-            return {"char_list": char_list, "gear": gear_result, "filepath": filepath}
+            return {"type":"gear_dup", "char_list": char_list, "gear": gear_result, "filepath": filepath}
     else:
         return filepath
 

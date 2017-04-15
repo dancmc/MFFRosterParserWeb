@@ -1,9 +1,7 @@
 const Compress = require('compress.js')
 const compress = new Compress()
 
-
-$("#image_submit").submit(function (event) {
-    event.preventDefault();
+$("#submit_multi").click(function () {
 
     var formData = new FormData();
     var images = Array.from(document.getElementById('images').files)
@@ -12,7 +10,6 @@ $("#image_submit").submit(function (event) {
         const resultdiv = $("#result_div");
         resultdiv.empty();
         resultdiv.append("<h3>Please select 1 or more images</h3>");
-
         return;
     }
 
@@ -32,99 +29,114 @@ $("#image_submit").submit(function (event) {
             const file = Compress.convertBase64ToFile(base64str, imgExt)
             console.log(item.elapsedTimeInSeconds)
             formData.append("file", file)
+
         })
-        sub(formData)
+        formData.append("mode", "multi")
+        sub(formData, "multi")
     })
 
 });
 
-function sub(formData) {
+$("#submit_single").click(function () {
+    var formData = new FormData();
+    var images = Array.from(document.getElementById('images').files)
+    formData.append("mode", "single")
+    formData.append("file", images[0])
+    sub(formData, "single")
+})
+
+function sub(formData, mode) {
     // }
     $.ajax({
-        url: "/mff/ocr",
-        type: 'POST',
-        data: formData,
-        //async: false,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function (returndata) {
+            url: "/mff/ocr",
+            type: 'POST',
+            data: formData,
+            //async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (returndata) {
+                const json = JSON.parse(returndata);
+                console.log(json);
+                const resultdiv = $("#result_div");
+                resultdiv.empty();
 
-            const json = JSON.parse(returndata);
+                if (mode === "multi") {
 
-            const resultdiv = $("#result_div");
-            resultdiv.empty();
+                    // show total time taken & file info
+                    const time = $("<div>Request took " + json.time_taken + "  seconds</div>");
+                    resultdiv.append(time);
+                    $('<p />').text('Total files sent : ' + json.number_total_files).appendTo(resultdiv);
+                    $('<p />').text('Invalid files : ' + json.number_invalid_files).appendTo(resultdiv);
+                    $('<p />').text('Successes : ' + json.successful.length).appendTo(resultdiv);
+                    $('<p />').text('Failures : ' + json.failures.length).appendTo(resultdiv);
+                    $('<p />').text('Ambiguous gears : ' + json.duplicate_gears.length).appendTo(resultdiv);
 
-            // show total time taken & file info
-            const time = $("<div>Request took " + json.time_taken + "  seconds</div>");
-            resultdiv.append(time);
-            $('<p />').text('Total files sent : ' + json.number_total_files).appendTo(resultdiv);
-            $('<p />').text('Invalid files : ' + json.number_invalid_files).appendTo(resultdiv);
-            $('<p />').text('Successes : ' + json.successful.length).appendTo(resultdiv);
-            $('<p />').text('Failures : ' + json.failures.length).appendTo(resultdiv);
-            $('<p />').text('Ambiguous gears : ' + json.duplicate_gears.length).appendTo(resultdiv);
+                    //========== asking about ambiguous gears ============
+                    if (json.duplicate_gears.length > 0) {
+                        resultdiv.append("<h2>Please choose</h2>");
+                    }
+                    json.duplicate_gears.forEach(function (dup) {
+                        let newdiv = $('<div />');
 
-            //========== asking about ambiguous gears ============
-            if (json.duplicate_gears.length > 0) {
-                resultdiv.append("<h2>Please choose</h2>");
-            }
-            json.duplicate_gears.forEach(function (dup) {
-                let newdiv = $('<div />');
+                        let image = new Image();
+                        image.src = dup.thumbnail_base64;
 
-                let image = new Image();
-                image.src = dup.thumbnail_base64;
+                        let list = $('<select />');
+                        for (let charalias in dup.char_list) {
+                            let option = document.createElement("option");
+                            option.value = charalias;
+                            option.text = charalias + " : " + dup.char_list[charalias];
+                            list.append(option)
+                        }
 
-                let list = $('<select />');
-                for (let charalias in dup.char_list) {
-                    let option = document.createElement("option");
-                    option.value = charalias;
-                    option.text = charalias + " : " + dup.char_list[charalias];
-                    list.append(option)
+                        let gearname_span = $("<br><p><b>" + dup.gear_name + "</b></p></br>");
+                        let gearjson_span = $("<br><p>" + dup.gear_json + "</p></br>");
+
+                        newdiv.append(image);
+                        newdiv.append(gearname_span);
+                        newdiv.append(list);
+                        newdiv.append(gearjson_span);
+                        resultdiv.append(newdiv)
+                    });
+
+                    //========== showing successes =======================
+                    if (json.successful.length > 0) {
+                        resultdiv.append("<h2>Successes</h2>");
+                    }
+                    json.successful.forEach(function (succ) {
+                        for (let base64 in succ) {
+                            let newdiv = $('<div />');
+
+                            let image = new Image();
+                            image.src = base64;
+                            let succjson_span = $("<br><p>" + succ[base64] + "</p></br>");
+
+                            newdiv.append(image);
+                            newdiv.append(succjson_span);
+                            resultdiv.append(newdiv);
+                        }
+                    });
+
+                    //========== showing failures ========================
+                    if (json.failures.length > 0) {
+                        resultdiv.append("<h2>Failures</h2>");
+                    }
+                    json.failures.forEach(function (base64) {
+                        let newdiv = $('<div />');
+
+                        let image = new Image();
+                        image.src = base64;
+                        newdiv.append(image);
+                        newdiv.append($('<p />'))
+                        resultdiv.append(newdiv);
+                    });
+                } else if (mode === "single") {
+                    $('<p />').text(returndata).appendTo(resultdiv);
                 }
 
-                let gearname_span = $("<br><p><b>" + dup.gear_name + "</b></p></br>");
-                let gearjson_span = $("<br><p>" + dup.gear_json + "</p></br>");
-
-                newdiv.append(image);
-                newdiv.append(gearname_span);
-                newdiv.append(list);
-                newdiv.append(gearjson_span);
-                resultdiv.append(newdiv)
-            });
-
-            //========== showing successes =======================
-            if (json.successful.length > 0) {
-                resultdiv.append("<h2>Successes</h2>");
             }
-            json.successful.forEach(function (succ) {
-                for (let base64 in succ) {
-                    let newdiv = $('<div />');
-
-                    let image = new Image();
-                    image.src = base64;
-                    let succjson_span = $("<br><p>" + succ[base64] + "</p></br>");
-
-                    newdiv.append(image);
-                    newdiv.append(succjson_span);
-                    resultdiv.append(newdiv);
-                }
-            });
-
-            //========== showing failures ========================
-            if (json.failures.length > 0) {
-                resultdiv.append("<h2>Failures</h2>");
-            }
-            json.failures.forEach(function (base64) {
-                let newdiv = $('<div />');
-
-                let image = new Image();
-                image.src = base64;
-                newdiv.append(image);
-                newdiv.append($('<p />'))
-                resultdiv.append(newdiv);
-            });
-
-
         }
-    });
+    )
+    ;
 }

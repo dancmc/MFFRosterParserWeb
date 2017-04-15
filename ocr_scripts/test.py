@@ -3,7 +3,7 @@ import tesserocr
 
 from PIL import Image
 
-from mff import ocr
+from mffstuff.ocr_scripts import ocr
 
 screenshots = list()
 screenshots.append(Image.open('C:/Users/Daniel/Nox_share/Image/Screenshot_2017-03-23-22-51-31 - Copy.jpg'))

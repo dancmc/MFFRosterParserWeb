@@ -7,6 +7,19 @@
 
 ## Technical details
 #### File uploads  
+* Data should be POSTed in FormData object, with attributes "file" and "mode"
+    ```javascript
+    var formData = new FormData();  
+    .....  
+    .....
+    
+    // Append any number of files
+    formData.append("file", file)
+  
+    // defaults to multi if not specified
+    formData.append("mode", "single")
+    ```
+  * single mode only processes the first file found
 * Most image sizes should work now that Tesseract is trained, tested with width 800 & above
   * I'm currently using this library for image compression : https://www.npmjs.com/package/compress.js
   * with settings <100kB, quality 0.85, maxWidth/Height 2000, resize true
@@ -14,15 +27,7 @@
 * Working resolutions
   * 16:9, 16:10, 4:3, 18.5:9, will add 3:2 soon, accepting requests
 * Accepted file formats  
-  * PNG, JPG, GIF, BMP, TIFF
-* Data should be POSTed in FormData object, with attribute "file"
-    ```javascript
-    var formData = new FormData();  
-    .....  
-    .....  
-    formData.append("file", file)
-    
-    ```
+  * PNG, JPG, GIF, BMP, TIFF     
 * Max request limit : 15 MB
 * CORS should hopefully be working
 
@@ -35,6 +40,16 @@ These are the only two page types currently supported :
 ![](https://github.com/dcmc87/ImageHost/blob/master/Screenshot_2017-04-11-00-37-58.png?raw-true)
 
 ## JSON formats
+### Single File Mode
+* There are 3 scenarios for a submitted file :
+  1. Success - details page
+  2. Success - gear page - matching 1 or more characters. Cannot assume that all the gear names will be the same - if cannot match OCR exactly, will look for any similar ones
+  3. Failure (error codes):
+     * 1 : Invalid file type
+     * 2 : OCR failed/not supported screenshot page
+     * 3 : Aspect ratio not supported
+
+### Multi File Mode
 * There are 4 scenarios for any file submitted :
   1. Invalid file type - no JSON response
   2. Failure - not a supported screenshot page type or OCR failed, base64 thumbnail sent back
@@ -43,13 +58,68 @@ These are the only two page types currently supported :
   4. Ambiguous/duplicate gear name - same gear name used by multiple characters, may be same or different gear number, base64 thumbnail + character list + gear json sent back
 
 ## JSON response structure
+### Single File Mode
+#### Success - Gear Page
+```json
+{
+  "success" : "true",
+  "type" : "gear",
+  "content" : {
+        "char_list" : [
+              {"id" : "sharon_rogers", "gear_name" : "energy blast lance", "gear_num" : 1},
+              ..... // if more than 1 character with same gear name
+              ]
+        "gear_val" : [
+              {"type" : "energy_attack_by_level", "val" :  48.5, "pref" : false},
+              .... // total 8 values
+              ]
+  }
+}
 ```
+
+#### Success - Details Page
+```json
+{
+  "success" : "true",
+  "type" : "details",
+  "content" : {
+        "id": "sharon_rogers", 
+        "uniform": "ca_75", 
+        "tier": 2,
+        "phys_att": 7949, 
+        "energy_att": 12623,
+        "atkspeed": 103.58,
+        "crit_rate": 31.04,
+        "critdamage": 130.04,
+        "defpen": 50.0,
+        "ignore_dodge": 0.0,
+        "phys_def": 7414,
+        "energy_def": 7247,
+        "hp": 17818,
+        "recorate": 108.12,
+        "dodge": 75.0,
+        "movspeed": 105.61,
+        "debuff": 8.08,
+        "scd": 37.24
+  }
+}
+```
+#### Failure
+```json
+{
+  "success" : "false",
+  "error" : 1
+}
+```
+------
+### Multi File Mode
+```json
 {  
-   "time_taken" : 0  
-   "number_total_files" : 3  
-  "number_invalid_files" : 1  
-  "successful" : [{"<thumbnail_base64_src>" : "<result_json>"},....]  
-  "failures" : ["<thumbnail_base64_src>",....]  
+  "time_taken" : 0,  
+  "number_total_files" : 3,  
+  "number_invalid_files" : 1,  
+  "successful" : [{"<thumbnail_base64_src>" : "<result_json>"},....],  
+  "failures" : ["<thumbnail_base64_src>",....],  
   "duplicate_gears" :   
 	  [{"thumbnail_base64": "<thumbnail_base64_src>",  
 	  "gear_json" : "<gear_json>",  

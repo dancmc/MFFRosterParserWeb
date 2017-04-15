@@ -1,12 +1,12 @@
-from mff.mainmff import do_ocr
-from flask import Flask, render_template, request, g
-from flask_cors import CORS, cross_origin
-import time
+from flask import Flask, render_template, request
+from flask_cors import cross_origin, CORS
 
+from .ocr_scripts.mainmff import do_ocr
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="./templates")
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
 
+CORS(app, origins="mokhet.com")
 
 @app.route("/")
 def top_level():
@@ -17,7 +17,15 @@ def top_level():
 def mff_ocr():
     if request.method == "POST":
         # retrieves a list of values with the same key
-        return do_ocr(request.files.getlist('file'))
+        file_list = request.files.getlist('file')
+        try:
+            mode = request.form["mode"]
+        except:
+            mode = "multi"
+        if mode=="single":
+            file_list = file_list[:1]
+
+        return do_ocr(file_list, mode)
     elif request.method == "GET":
         return render_template('image_upload.html')
 

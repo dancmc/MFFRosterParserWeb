@@ -10,16 +10,21 @@
 
 <h1>MFF OCR Demo</h1>
 <form id="image_submit" action="/mff/ocr" method="post" enctype="multipart/form-data" onsubmit="return false">
-    <p><input type="file" id ="images" name="file" multiple/>
-    <p><input type="submit" value="Submit"/></p>
+    <p><input type="file" id="images" name="file" multiple/>
+
 </form>
+<span>
+    <input type="button" id="submit_single" value="Submit Single"/>
+    <input type="button" id="submit_multi" value="Submit Multi"/>
+</span>
 
 <div class="clearfix" id="result_div">
-<div style = 'clear:both'></div>
+    <div style='clear:both'></div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="../static/js/bundle.v2.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"
+        charset="utf-8"></script>
+<script src="../static/js/bundle.v2.03.js" type="text/javascript" charset="utf-8"></script>
 <!--script  data-main="../static/js/mff_ecma6" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js" type="text/javascript" charset="utf-8"></script-->
 
 </body>

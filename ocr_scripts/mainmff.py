@@ -1,24 +1,24 @@
 import base64
-
 import imghdr
 import multiprocessing
 import os
 import threading
 import time
+import uuid
+
+from . import databasehelper as db
 import jsonpickle
 from PIL import Image
-import uuid
-from wand.image import Image as WImage
-import mff.databasehelper as db
-
 from werkzeug.utils import secure_filename
-from mff.mffhelper import get_char_json
 
-UPLOAD_FOLDER = '/var/www/app_dancmc/mff/uploaded_screenshots'
+from .mffhelper import UnsupportedRatioException
+from .mffhelper import get_char_json
+
+UPLOAD_FOLDER = '/var/www/app_dancmc/mff/ocr/uploaded_screenshots'
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 
-def do_ocr(file_list):
+def do_ocr(file_list, request_mode):
     timer = time.time()
 
     class ResultJSON:
@@ -30,7 +30,8 @@ def do_ocr(file_list):
             self.failures = list()
             self.duplicate_gears = list()
 
-    final_json = ResultJSON()
+    multi_final_json = ResultJSON()
+    single_final_json = ""
     num_total_files = len(file_list)
     num_invalid_images = 0
 
@@ -92,61 +93,117 @@ def do_ocr(file_list):
                            type_5, val_5, type_6, val_6, type_7, val_7, type_8, val_8, filename, time_utc)
 
     def log_result(result):
-        print(result)
+        # print(result)
+
+        nonlocal num_invalid_images
+        nonlocal single_final_json
+        nonlocal multi_final_json
+
+        # Failed - invalid file format
         if result is None:
-            nonlocal num_invalid_images
+            # results
             num_invalid_images += 1
+
+            single_final_json = {"success": "false",
+                                 "error": 1}
+
+            # sql logs
             generate_sql()
 
 
-        # Add resized thumbnails to failures
+        # Failed - Unsupported ratio
+        elif result is UnsupportedRatioException:
+            # results
+            num_invalid_images += 1
+
+            single_final_json = {"success": "false",
+                                 "error": 3}
+
+            # sql logs
+            generate_sql()
+
+        # Failed - wrong screenshot page/OCR failed
         elif type(result) is str:
-            final_json.failures.append(resize_and_to_base64(result))
+            # results
+            multi_final_json.failures.append(resize_and_to_base64(result))
+
+            single_final_json = {"success": "false",
+                                 "error": 2}
 
             # sql logs
             generate_sql(filename=os.path.split(result)[1], time_utc=int(time.time()))
 
-        # Add resized thumbnails and json to successful
-        elif len(result) == 4:
+
+        # Successful - details
+        elif result["type"] == "details":
 
             char = result["result_char"]
             result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
-            final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
+            multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
+
+            single_final_json = {"success": "true",
+                                 "type": "details",
+                                 "content": {"id": char.id, "uniform": char.uniform, "tier": char.tier,
+                                             "phys_att": char.attack.physical, "energy_att": char.attack.energy,
+                                             "atkspeed": char.atkspeed, "crit_rate": char.critrate,
+                                             "critdamage": char.critdamage, "defpen": char.defpen,
+                                             "ignore_dodge": char.ignore_dodge, "phys_def": char.defense.physical,
+                                             "energy_def": char.defense.energy, "hp": char.hp,
+                                             "recorate": char.recorate, "dodge": char.dodge,
+                                             "movspeed": char.movspeed, "debuff": char.debuff,
+                                             "scd": char.scd}}
 
             # sql logs
-            if result["gear_num"] < 0:
-                generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, uni_alias=char.uniform,
-                             tier=char.tier, phys_att=char.attack.physical, energy_att=char.attack.energy,
-                             atk_spd=char.atkspeed, crit_rate=char.critrate, crit_dam=char.critdamage,
-                             def_pen=char.defpen, ignore_dodge=char.ignore_dodge, phys_def=char.defense.physical,
-                             energy_def=char.defense.energy, hp=char.hp, reco_rate=char.recorate, dodge=char.dodge,
-                             mv_spd=char.movspeed, debuff=char.debuff, scd=char.scd, time_utc=int(time.time()))
-            else:
-                gear = char.gear[result["gear_num"]]
-                generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, type_1=gear[0].type,
-                             val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val, type_3=gear[2].type,
-                             val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
-                             val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
-                             val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val,
-                              gear_name=result["gear_name"], time_utc=int(time.time()))
+            generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, uni_alias=char.uniform,
+                         tier=char.tier, phys_att=char.attack.physical, energy_att=char.attack.energy,
+                         atk_spd=char.atkspeed, crit_rate=char.critrate, crit_dam=char.critdamage,
+                         def_pen=char.defpen, ignore_dodge=char.ignore_dodge, phys_def=char.defense.physical,
+                         energy_def=char.defense.energy, hp=char.hp, reco_rate=char.recorate, dodge=char.dodge,
+                         mv_spd=char.movspeed, debuff=char.debuff, scd=char.scd, time_utc=int(time.time()))
 
 
-        # Add resized thumbnails and json to duplicate gears
-        elif len(result) == 3:
+        # Successful - single gear
+        elif result["type"] == "gear":
+
+            char = result["result_char"]
+            result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
+            multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
+
+            gear = char.gear[result["gear_num"]-1]
+            single_final_json = {"success":"true",
+                                 "type":"gear",
+                                 "content": {"char_list": result["char_list"],
+                                             "gear_val": gear}}
+            # sql logs
+            generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, type_1=gear[0].type,
+                         val_1=gear[0].val, type_2=gear[1].type, val_2=gear[1].val, type_3=gear[2].type,
+                         val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
+                         val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
+                         val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val,
+                         gear_name=result["gear_name"], time_utc=int(time.time()))
+
+
+        # Successful - dup gears
+        elif result["type"] == "gear_dup":
             char_list = result["char_list"]
             char_dict = {}
             for char in char_list:
-                char_dict[char["char_alias"]] = char["gear_num"]
+                char_dict[char["id"]] = char["gear_num"]
 
             gear = result["gear"]
             gear_json = jsonpickle.encode(gear, unpicklable=False)
 
-            final_json.duplicate_gears.append(
+            multi_final_json.duplicate_gears.append(
                 {"thumbnail_base64": resize_and_to_base64(result['filepath']),
                  "gear_name": result['char_list'][0]["gear_name"],
                  "gear_json": gear_json,
                  "char_list": char_dict}
             )
+
+            single_final_json = {"success": "true",
+                                 "type": "gear",
+                                 "content": {"char_list": char_list,
+                                             "gear_val": gear}}
 
             # sql logs
             generate_sql(time_utc=int(time.time()), filename=os.path.split(result["filepath"])[1],
@@ -155,7 +212,6 @@ def do_ocr(file_list):
                          val_3=gear[2].val, type_4=gear[3].type, val_4=gear[3].val, type_5=gear[4].type,
                          val_5=gear[4].val, type_6=gear[5].type, val_6=gear[5].val, type_7=gear[6].type,
                          val_7=gear[6].val, type_8=gear[7].type, val_8=gear[7].val)
-
 
     def process_images(validated_file_paths):
 
@@ -170,14 +226,17 @@ def do_ocr(file_list):
             for i in validated_file_paths:
                 log_result(get_char_json(i))
 
-
         time_taken = str(time.time() - timer)
 
-        final_json.time_taken = time_taken
-        final_json.number_total_files = num_total_files
-        final_json.number_invalid_files = num_invalid_images
+        multi_final_json.time_taken = time_taken
+        multi_final_json.number_total_files = num_total_files
+        multi_final_json.number_invalid_files = num_invalid_images
 
-        final = jsonpickle.encode(final_json, unpicklable=False)
+        final = ""
+        if(request_mode=="single"):
+            final= jsonpickle.encode(single_final_json, unpicklable=False)
+        if(request_mode=="multi"):
+            final = jsonpickle.encode(multi_final_json, unpicklable=False)
 
         sql_statement = "INSERT INTO log (char_alias, uni_alias, tier, phys_att, energy_att, atk_spd, crit_rate, crit_dam," \
                         "def_pen, ignore_dodge, phys_def, energy_def, hp, reco_rate, dodge, mv_spd, debuff," \
@@ -185,12 +244,8 @@ def do_ocr(file_list):
                         "type_5, val_5, type_6, val_6, type_7, val_7, type_8, val_8, filename, time_utc) " \
                         "VALUES "
 
-
-        val_list = []
-        for i in range(sql_count):
-            val_list.append(
-                '(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)')
-        sql_statement = sql_statement + ",".join(val_list) + ";"
+        values_list = ['(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)']*sql_count
+        sql_statement = sql_statement + ",".join(values_list) + ";"
 
         try:
             db.insert_log(sql_statement, sql_data_tuple)
@@ -198,7 +253,6 @@ def do_ocr(file_list):
             pass
 
         return final
-
 
     # validate file as image
     def get_ext(file):
