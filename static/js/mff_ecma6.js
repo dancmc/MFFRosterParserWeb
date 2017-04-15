@@ -1,8 +1,7 @@
 const Compress = require('compress.js')
 const compress = new Compress()
 
-$("#submit_multi").click(function () {
-
+function compressAll(mode) {
     var formData = new FormData();
     var images = Array.from(document.getElementById('images').files)
 
@@ -31,19 +30,17 @@ $("#submit_multi").click(function () {
             formData.append("file", file)
 
         })
-        formData.append("mode", "multi")
-        sub(formData, "multi")
+        formData.append("mode", mode)
+        sub(formData, mode)
     })
+}
 
-});
 
-$("#submit_single").click(function () {
-    var formData = new FormData();
-    var images = Array.from(document.getElementById('images').files)
-    formData.append("mode", "single")
-    formData.append("file", images[0])
-    sub(formData, "single")
-})
+$("#submit_multi").click(compressAll("multi")
+);
+
+$("#submit_single").click(compressAll("single")
+);
 
 function sub(formData, mode) {
     // }
