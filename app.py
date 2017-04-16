@@ -1,19 +1,22 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, g
 from flask_cors import cross_origin, CORS
+import time
 
 from ocr_scripts.mainmff import do_ocr
 
 app = Flask(__name__, template_folder="./templates")
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
 
-CORS(app, origins="www.mokhet.com")
+# regex - s in https optional, two optional non capturing groups (?:...)
+# first group means any number of characters followed by . , second group means literal : followed by 1-5 digits (port)
+CORS(app, origins=["https?://(?:.+\.)?192.168.1.86(?::\d{1,5})?","https?://(?:.+\.)?mokhet.com(?::\d{1,5})?"])
 
 @app.route("/")
 def top_level():
     return "Hello there!"
 
 @app.route("/mff/ocr", methods=['POST', 'GET'])
-@cross_origin()
+#@cross_origin()
 def mff_ocr():
     if request.method == "POST":
         # retrieves a list of values with the same key
@@ -31,7 +34,9 @@ def mff_ocr():
 
 
 #### DB stuff ######################################################
-
+@app.before_request
+def start_time():
+    g.timerr = time.time()
 
 
 

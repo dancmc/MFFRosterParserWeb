@@ -5,6 +5,7 @@ import os
 import threading
 import time
 import uuid
+from flask import g
 
 from . import databasehelper as db
 import jsonpickle
@@ -20,6 +21,7 @@ ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 def do_ocr(file_list, request_mode):
     timer = time.time()
+    print("start ocr "+ str(time.time()-g.timerr))
 
     class ResultJSON:
         def __init__(self):
@@ -227,6 +229,7 @@ def do_ocr(file_list, request_mode):
                 log_result(get_char_json(i))
 
         time_taken = str(time.time() - timer)
+        print(time_taken)
 
         multi_final_json.time_taken = time_taken
         multi_final_json.number_total_files = num_total_files
@@ -252,6 +255,7 @@ def do_ocr(file_list, request_mode):
         except:
             pass
 
+        print("end ocr " + str(time.time() - g.timerr))
         return final
 
     # validate file as image
