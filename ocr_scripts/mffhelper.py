@@ -229,7 +229,7 @@ class GearValue:
     def __init__(self):
         self.type = ""
         self.val = 0.
-        self.pref = False
+        # self.pref = False
 
 
 class Attack:

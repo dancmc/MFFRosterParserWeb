@@ -98,7 +98,7 @@ class Ocr:
         self.api.SetImage(black_white_image)
 
         text = self.api.GetUTF8Text().replace("\n", "")
-        # print(text +"   |" +str(datetime.now()-now))
+        print(text +"   |" +str(datetime.now()-now))
         return text.lower()
 
 

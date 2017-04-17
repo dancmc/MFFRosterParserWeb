@@ -15,7 +15,7 @@ from werkzeug.utils import secure_filename
 from .mffhelper import UnsupportedRatioException
 from .mffhelper import get_char_json
 
-UPLOAD_FOLDER = '/var/www/app_dancmc/mff/ocr_scripts/uploaded_screenshots'
+UPLOAD_FOLDER = '/var/www/app_dancmc_nginx/mff/ocr_scripts/uploaded_screenshots'
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 
@@ -106,7 +106,7 @@ def do_ocr(file_list, request_mode):
             # results
             num_invalid_images += 1
 
-            single_final_json = {"success": "false",
+            single_final_json = {"success": False,
                                  "error": 1}
 
             # sql logs
@@ -118,7 +118,7 @@ def do_ocr(file_list, request_mode):
             # results
             num_invalid_images += 1
 
-            single_final_json = {"success": "false",
+            single_final_json = {"success": False,
                                  "error": 3}
 
             # sql logs
@@ -129,7 +129,7 @@ def do_ocr(file_list, request_mode):
             # results
             multi_final_json.failures.append(resize_and_to_base64(result))
 
-            single_final_json = {"success": "false",
+            single_final_json = {"success": False,
                                  "error": 2}
 
             # sql logs
@@ -143,7 +143,7 @@ def do_ocr(file_list, request_mode):
             result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
             multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
 
-            single_final_json = {"success": "true",
+            single_final_json = {"success": True,
                                  "type": "details",
                                  "content": {"id": char.id, "uniform": char.uniform, "tier": char.tier,
                                              "phys_att": char.attack.physical, "energy_att": char.attack.energy,
@@ -166,15 +166,20 @@ def do_ocr(file_list, request_mode):
 
         # Successful - single gear
         elif result["type"] == "gear":
+            char_list = result["char_list"]
+            char_dict = {}
+            for char in char_list:
+                char_dict[char["id"]] = char["gear_num"]
+
 
             char = result["result_char"]
             result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
             multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
 
             gear = char.gear[result["gear_num"]-1]
-            single_final_json = {"success":"true",
+            single_final_json = {"success":True,
                                  "type":"gear",
-                                 "content": {"char_list": result["char_list"],
+                                 "content": {"char_list": char_dict,
                                              "gear_val": gear}}
             # sql logs
             generate_sql(filename=os.path.split(result["filepath"])[1], char_alias=char.id, type_1=gear[0].type,
@@ -202,9 +207,9 @@ def do_ocr(file_list, request_mode):
                  "char_list": char_dict}
             )
 
-            single_final_json = {"success": "true",
+            single_final_json = {"success": True,
                                  "type": "gear",
-                                 "content": {"char_list": char_list,
+                                 "content": {"char_list": char_dict,
                                              "gear_val": gear}}
 
             # sql logs

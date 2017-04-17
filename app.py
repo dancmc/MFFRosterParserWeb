@@ -7,16 +7,22 @@ from ocr_scripts.mainmff import do_ocr
 app = Flask(__name__, template_folder="./templates")
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
 
+
 # regex - s in https optional, two optional non capturing groups (?:...)
 # first group means any number of characters followed by . , second group means literal : followed by 1-5 digits (port)
-CORS(app, origins=["https?://(?:.+\.)?192.168.1.86(?::\d{1,5})?","https?://(?:.+\.)?mokhet.com(?::\d{1,5})?"])
+origins = ["dancmc.io", "192.168.1.86", "mokhet.com"]
+def regex_domain(origin_list):
+    return ["https?://(?:.+\.)?" + origin + "(?::\d{1,5})?" for origin in origin_list]
+CORS(app, origins=regex_domain(origins))
+
 
 @app.route("/")
 def top_level():
     return "Hello there!"
 
+
 @app.route("/mff/ocr", methods=['POST', 'GET'])
-#@cross_origin()
+# @cross_origin()
 def mff_ocr():
     if request.method == "POST":
         # retrieves a list of values with the same key
@@ -25,7 +31,7 @@ def mff_ocr():
             mode = request.form["mode"]
         except:
             mode = "multi"
-        if mode=="single":
+        if mode == "single":
             file_list = file_list[:1]
 
         return do_ocr(file_list, mode)
@@ -37,7 +43,6 @@ def mff_ocr():
 @app.before_request
 def start_time():
     g.timerr = time.time()
-
 
 
 #### Comment out in production #####################################
@@ -55,6 +60,4 @@ def start_time():
 #         return r
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
-
-
+    app.run()

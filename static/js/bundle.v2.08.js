@@ -53,7 +53,7 @@ $("#submit_single").click(function() {
 function sub(formData, mode) {
     // }
     $.ajax({
-            url: "http://www.dancmc.io/mff/ocr",
+            url: "/mff/ocr",
             type: 'POST',
             data: formData,
             //async: false,
