@@ -15,7 +15,7 @@ from werkzeug.utils import secure_filename
 from .mffhelper import UnsupportedRatioException
 from .mffhelper import get_char_json
 
-UPLOAD_FOLDER = '/var/www/app_dancmc_nginx/mff/ocr_scripts/uploaded_screenshots'
+UPLOAD_FOLDER = '/var/www/app_dancmc/mff/ocr_scripts/uploaded_screenshots'
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 

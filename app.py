@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, g
 from flask_cors import cross_origin, CORS
 import time
 
-from ocr_scripts.mainmff import do_ocr
+from .ocr_scripts.mainmff import do_ocr
 
 app = Flask(__name__, template_folder="./templates")
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
