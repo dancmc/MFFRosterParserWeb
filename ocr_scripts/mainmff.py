@@ -21,7 +21,6 @@ ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 def do_ocr(file_list, request_mode):
     timer = time.time()
-    print("start ocr "+ str(time.time()-g.timerr))
 
     class ResultJSON:
         def __init__(self):
@@ -33,7 +32,8 @@ def do_ocr(file_list, request_mode):
             self.duplicate_gears = list()
 
     multi_final_json = ResultJSON()
-    single_final_json = ""
+    single_final_json = {"success": False,
+                         "error": 4}
     num_total_files = len(file_list)
     num_invalid_images = 0
 
@@ -127,7 +127,8 @@ def do_ocr(file_list, request_mode):
         # Failed - wrong screenshot page/OCR failed
         elif type(result) is str:
             # results
-            multi_final_json.failures.append(resize_and_to_base64(result))
+            if request_mode == "multi":
+                multi_final_json.failures.append(resize_and_to_base64(result))
 
             single_final_json = {"success": False,
                                  "error": 2}
@@ -140,8 +141,10 @@ def do_ocr(file_list, request_mode):
         elif result["type"] == "details":
 
             char = result["result_char"]
-            result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
-            multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
+
+            if request_mode == "multi":
+                result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
+                multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
 
             single_final_json = {"success": True,
                                  "type": "details",
@@ -173,8 +176,9 @@ def do_ocr(file_list, request_mode):
 
 
             char = result["result_char"]
-            result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
-            multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
+            if request_mode == "multi":
+                result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
+                multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
 
             gear = char.gear[result["gear_num"]-1]
             single_final_json = {"success":True,
@@ -200,12 +204,13 @@ def do_ocr(file_list, request_mode):
             gear = result["gear"]
             gear_json = jsonpickle.encode(gear, unpicklable=False)
 
-            multi_final_json.duplicate_gears.append(
-                {"thumbnail_base64": resize_and_to_base64(result['filepath']),
-                 "gear_name": result['char_list'][0]["gear_name"],
-                 "gear_json": gear_json,
-                 "char_list": char_dict}
-            )
+            if request_mode == "multi":
+                multi_final_json.duplicate_gears.append(
+                    {"thumbnail_base64": resize_and_to_base64(result['filepath']),
+                     "gear_name": result['char_list'][0]["gear_name"],
+                     "gear_json": gear_json,
+                     "char_list": char_dict}
+                )
 
             single_final_json = {"success": True,
                                  "type": "gear",
@@ -234,7 +239,7 @@ def do_ocr(file_list, request_mode):
                 log_result(get_char_json(i))
 
         time_taken = str(time.time() - timer)
-        print(time_taken)
+        print("Time taken ; "+time_taken)
 
         multi_final_json.time_taken = time_taken
         multi_final_json.number_total_files = num_total_files
@@ -260,8 +265,9 @@ def do_ocr(file_list, request_mode):
         except:
             pass
 
-        print("end ocr " + str(time.time() - g.timerr))
         return final
+
+
 
     # validate file as image
     def get_ext(file):
@@ -273,14 +279,20 @@ def do_ocr(file_list, request_mode):
 
     # remove all non-valid files
     for file in file_list:
-        if file and file.filename != '':
-            ext = get_ext(file)
-            print(ext)
-            if ext is None:
-                file_list.remove(file)
-                num_invalid_images += 1
-            else:
-                file.filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
+
+        # if file:
+        ext = get_ext(file)
+        print(ext)
+        if ext is None:
+            file_list.remove(file)
+            num_invalid_images += 1
+
+            if request_mode=="single":
+                return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
+        else:
+            file.filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
+        # else :
+        #     return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
 
     #
     file_paths = list()

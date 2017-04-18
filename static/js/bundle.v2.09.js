@@ -10,7 +10,6 @@ function compressAll(mode) {
         const resultdiv = $("#result_div");
         resultdiv.empty();
         resultdiv.append("<h3>Please select 1 or more images</h3>");
-        console.log("multi")
         return;
     }
 
@@ -29,6 +28,7 @@ function compressAll(mode) {
             const imgExt = item.ext
             const file = Compress.convertBase64ToFile(base64str, imgExt)
             console.log(item.elapsedTimeInSeconds)
+
             formData.append("file", file)
 
         })
@@ -53,13 +53,14 @@ $("#submit_single").click(function() {
 function sub(formData, mode) {
     // }
     $.ajax({
-            url: "/mff/ocr",
+            url: "https://dancmc.io/mff/ocr",
             type: 'POST',
             data: formData,
             //async: false,
             cache: false,
             contentType: false,
             processData: false,
+            // enctype:"base64",
             success: function (returndata) {
                 const json = JSON.parse(returndata);
                 console.log(json);

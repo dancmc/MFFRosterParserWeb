@@ -45,9 +45,10 @@ These are the only two page types currently supported :
   1. Success - details page
   2. Success - gear page - matching 1 or more characters. Cannot assume that all the gear names will be the same - if cannot match OCR exactly, will look for any similar ones
   3. Failure (error codes):
-     * 1 : Invalid file type
+     * 1 : Invalid file format
      * 2 : OCR failed/not supported screenshot page
      * 3 : Aspect ratio not supported
+     * 4 : No file sent/found
 
 ### Multi File Mode
 * There are 4 scenarios for any file submitted :
