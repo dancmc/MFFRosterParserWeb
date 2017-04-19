@@ -40,7 +40,7 @@ def get_chars_from_gear(ocr_output):
 
     # if no exact match, try to find close match
     if cur.rowcount == 0:
-        # create view with all gears in game
+        # create view with all gears in game, union means no duplicates
         sql = "SELECT char_alias, gear1 as gear_name, '1' AS gear_num FROM mff " \
               "UNION SELECT char_alias, gear2, '2' AS gear_num FROM mff " \
               "UNION SELECT char_alias, gear3, '3' AS gear_num FROM mff " \
@@ -76,10 +76,12 @@ def get_char_alias(char_name):
         SQL = "SELECT char_alias, char_name FROM mff"
         cur.execute(SQL)
         rows = cur.fetchall()
+        threshold = 5
         for row in rows:
-            threshold = 4 if len(char_name) > 8 else 3
-            if Levenshtein.distance(char_name, row[1]) < threshold:
+            distance =Levenshtein.distance(char_name, row[1])
+            if distance < threshold:
                 char_alias = row[0]
+                threshold= distance
     cur.close()
     return char_alias
 
@@ -98,10 +100,12 @@ def get_uniform_alias(uni_name):
         SQL = "SELECT uni_alias, uni_name FROM mff"
         cur.execute(SQL)
         rows = cur.fetchall()
+        threshold = 5
         for row in rows:
-            threshold = 5 if len(uni_name) > 10 else 3
-            if Levenshtein.distance(uni_name, row[1]) < threshold:
+            distance = Levenshtein.distance(uni_name, row[1])
+            if distance < threshold:
                 uni_alias = row[0]
+                threshold = distance
 
     cur.close()
     return uni_alias

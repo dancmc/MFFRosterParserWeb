@@ -244,7 +244,7 @@ def do_ocr():
                 log_result(get_char_json(i))
 
         time_taken = str(time.time() - timer)
-        print("Time taken ; "+time_taken)
+        print("Time taken : "+time_taken)
 
         multi_final_json.time_taken = time_taken
         multi_final_json.number_total_files = num_total_files
@@ -270,6 +270,7 @@ def do_ocr():
         except:
             pass
 
+        print(final)
         return final
 
 
@@ -302,12 +303,14 @@ def do_ocr():
 
         # validate only if file found, else see if it was a base64 string encoded as a file
         if len(file_list) > 0 and not validate_image(file_list[0]):
-            file_list[0] = (FileStorage(stream=BytesIO(base64.b64decode(file_list[0].getvalue())),
-                                        filename="blob"))
+            try:
+                file_list[0] = (FileStorage(stream=BytesIO(base64.b64decode(file_list[0].getvalue())),
+                                            filename="blob"))
+            except:
+                pass
 
         # if previous file exists but not valid, error, else check for base64 in form or raw
         if len(file_list) > 0 and not validate_image(file_list[0]):
-
             return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
 
         if len(file_list) == 0:
@@ -321,14 +324,14 @@ def do_ocr():
             for base64string in base64_string_list:
                 try:
                     # this appending is basically ignored if already found file previously
-                    file_list = [(FileStorage(stream=BytesIO(base64.b64decode(base64string)),
-                                              filename="blob"))]
+                    file_list = [(FileStorage(stream=BytesIO(base64.b64decode(base64string)),filename="blob"))]
                 except:
                     pass
 
         # if no file, or previous file not valid, check for file with no mimetype set
         if len(file_list) > 0 and not validate_image(file_list[0]):
             file_list = [(FileStorage(stream=BytesIO(request.data)))]
+
 
         # validate final file, could also pass empty file list
         if len(file_list) > 0:
@@ -339,6 +342,7 @@ def do_ocr():
                 return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
             else:
                 file_list[0].filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
+
 
         file_list = file_list[:1]
 
