@@ -2,15 +2,17 @@ import base64
 import imghdr
 import multiprocessing
 import os
+from io import BytesIO, StringIO
 import threading
 import time
 import uuid
-from flask import g
+from flask import g, request
 
 from . import databasehelper as db
 import jsonpickle
 from PIL import Image
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 
 from .mffhelper import UnsupportedRatioException
 from .mffhelper import get_char_json
@@ -19,7 +21,7 @@ UPLOAD_FOLDER = '/var/www/app_dancmc/mff/ocr_scripts/uploaded_screenshots'
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 
-def do_ocr(file_list, request_mode):
+def do_ocr():
     timer = time.time()
 
     class ResultJSON:
@@ -34,8 +36,9 @@ def do_ocr(file_list, request_mode):
     multi_final_json = ResultJSON()
     single_final_json = {"success": False,
                          "error": 4}
-    num_total_files = len(file_list)
+    num_total_files = 0
     num_invalid_images = 0
+    request_mode = "single"
 
     sql_count = 0
     sql_data_tuple = ()
@@ -270,31 +273,90 @@ def do_ocr(file_list, request_mode):
 
 
     # validate file as image
-    def get_ext(file):
+    def validate_image(file):
         # remember to return read cursor to start
         ext = imghdr.what("", file.read())
         file.seek(0)
-        ext = None if ext is None else ext.lower()
-        return ext if ext in ALLOWED_EXTENSIONS else None
+        # ext = None if ext is None else ext.lower()
+        return ext.lower() if ext in ALLOWED_EXTENSIONS else None
 
-    # remove all non-valid files
-    for file in file_list:
+        # basic flow -> try to encode to bytes ->
+        # if cannot, return error 4 (no file), if can, validate image ->
+        # if image, go to ocr, if not return error 1 (invalid file format)
 
-        # if file:
-        ext = get_ext(file)
-        print(ext)
-        if ext is None:
-            file_list.remove(file)
-            num_invalid_images += 1
 
-            if request_mode=="single":
+    # check mode, default to single
+    try:
+        mode = request.form["mode"]
+    except:
+        mode = "single"
+
+
+    # check for files encoded with known mimetype, in multipart
+    # ignoring base64 strings in multi
+    file_list = request.files.getlist('file')
+
+    if mode == "single":
+
+        # validate only if file found, else see if it was a base64 string encoded as a file
+        if len(file_list) > 0 and not validate_image(file_list[0]):
+            file_list[0] = (FileStorage(stream=BytesIO(base64.b64decode(file_list[0].getvalue())),
+                                        filename="blob"))
+
+        # if previous file exists but not valid, error, else check for base64 in form or raw
+        if len(file_list) > 0 and not validate_image(file_list[0]):
+
+            return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
+
+        if len(file_list) == 0:
+            # there really shouldn't be both form and raw data - so form given priority as more specific
+            # check for base64 in form
+            base64_string_list = request.form.getlist('file')
+
+            # check for base64 in raw (non-form)
+            if len(request.data) > 0:
+                base64_string_list.append(request.data)
+            for base64string in base64_string_list:
+                try:
+                    # this appending is basically ignored if already found file previously
+                    file_list = [(FileStorage(stream=BytesIO(base64.b64decode(base64string)),
+                                              filename="blob"))]
+                except:
+                    pass
+
+        # if no file, or previous file not valid, check for file with no mimetype set
+        if len(file_list) > 0 and not validate_image(file_list[0]):
+            file_list = [(FileStorage(stream=BytesIO(request.data)))]
+
+        # validate final file, could also pass empty file list
+        if len(file_list) > 0:
+            ext = validate_image(file_list[0])
+            print(ext)
+            if not ext:
+
                 return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
-        else:
-            file.filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
+            else:
+                file_list[0].filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
+
+        file_list = file_list[:1]
+
+    if mode == "multi":
+
+        # remove all non-valid files
+        for file in file_list:
+            # if file:
+            ext = validate_image(file)
+            print(ext)
+            if not ext:
+                file_list.remove(file)
+                num_invalid_images += 1
+            else:
+                file.filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
         # else :
         #     return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
+    print(file_list)
+    num_total_files=len(file_list)
 
-    #
     file_paths = list()
     if not os.path.isdir(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)

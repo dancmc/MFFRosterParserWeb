@@ -1,10 +1,7 @@
 from flask import Flask, render_template, request, g
 from flask_cors import cross_origin, CORS
 import time
-from io import BytesIO, StringIO
-import base64
-from werkzeug.datastructures import FileStorage
-import imghdr
+
 
 from ocr_scripts.mainmff import do_ocr
 
@@ -29,45 +26,7 @@ def top_level():
 # @cross_origin()
 def mff_ocr():
     if request.method == "POST":
-
-        # basic flow -> try to encode to bytes ->
-        # if cannot, return error 4 (no file), if can, validate image ->
-        # if image, go to ocr, if not return error 1 (invalid file format)
-
-        # check mode, default to single
-        try:
-            mode = request.form["mode"]
-        except:
-            mode = "single"
-
-        # check for files encoded with known mimetype
-        file_list = request.files.getlist('file')
-
-        # check for base64 in form or as raw
-        base64_string_list = request.form.getlist('file')
-        base64_string_list.append(request.data)
-
-        for base64string in base64_string_list:
-            try:
-                file_list.append(FileStorage(stream=BytesIO(base64.b64decode(base64string)),
-                                             filename="blob"))
-            except:
-                pass
-
-        # validate file as image, lastly check for file with no mimetype set
-        if len(file_list)==1 and mode == "single":
-            file = file_list[0]
-            ext = imghdr.what("", file.read())
-            file.seek(0)
-            if ext is None:
-                file_list[0] = (FileStorage(stream=BytesIO(request.data)))
-
-        print(file_list)
-
-        if mode == "single":
-            file_list = file_list[:1]
-
-        return do_ocr(file_list, mode)
+        return do_ocr()
     elif request.method == "GET":
         return render_template('image_upload.html')
 
