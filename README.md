@@ -66,10 +66,11 @@ These are the only two page types currently supported :
   "success" : "true",
   "type" : "gear",
   "content" : {
-        "char_list" : [
-              {"id" : "sharon_rogers", "gear_name" : "energy blast lance", "gear_num" : 1},
+        "char_list" : {
+              "sharon_rogers" : 1,
+              "octopus" : 3,
               ..... // if more than 1 character with same gear name
-              ]
+              }
         "gear_val" : [
               {"type" : "energy_attack_by_level", "val" :  48.5, "pref" : false},
               .... // total 8 values
