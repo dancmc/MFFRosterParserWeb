@@ -362,7 +362,9 @@ def get_char_json(filepath):
     try:
         rects = Rects(width, height)
     except UnsupportedRatioException:
-        return UnsupportedRatioException
+        e = UnsupportedRatioException()
+        e.message = filepath
+        return e
 
     if color_ocr_text(screenshot, rects.rect_check_details_page, color=(10, 18, 35), inverted_colors=True).replace(" ", "") == "attack":
 

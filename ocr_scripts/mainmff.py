@@ -117,15 +117,16 @@ def do_ocr():
 
 
         # Failed - Unsupported ratio
-        elif result is UnsupportedRatioException:
+        elif isinstance(result,  UnsupportedRatioException):
             # results
-            num_invalid_images += 1
-
+            if request_mode == "multi":
+                multi_final_json.failures.append(resize_and_to_base64(result.message))
             single_final_json = {"success": False,
                                  "error": 3}
 
             # sql logs
-            generate_sql()
+            print(result.message)
+            generate_sql(filename=result.message, time_utc=int(time.time()))
 
         # Failed - wrong screenshot page/OCR failed
         elif type(result) is str:
@@ -148,6 +149,7 @@ def do_ocr():
             if request_mode == "multi":
                 result_json = '"' + char.id + '":' + jsonpickle.encode(char, unpicklable=False)
                 multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
+
 
             single_final_json = {"success": True,
                                  "type": "details",
@@ -287,16 +289,16 @@ def do_ocr():
 
     # check mode, default to single
     try:
-        mode = request.form["mode"]
+        request_mode = request.form["mode"]
     except:
-        mode = "single"
+        request_mode = "single"
 
 
     # check for files encoded with known mimetype, in multipart
     # ignoring base64 strings in multi
     file_list = request.files.getlist('file')
 
-    if mode == "single":
+    if request_mode == "single":
 
         # validate only if file found, else see if it was a base64 string encoded as a file
         if len(file_list) > 0 and not validate_image(file_list[0]):
@@ -340,7 +342,7 @@ def do_ocr():
 
         file_list = file_list[:1]
 
-    if mode == "multi":
+    if request_mode == "multi":
 
         # remove all non-valid files
         for file in file_list:
