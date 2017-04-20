@@ -63,7 +63,6 @@ def do_ocr():
         # targeting thumbnail width of 450
         original_w = image.size[0]
         original_h = image.size[1]
-        print(original_w)
         scale = 500 / original_w
 
         # modifies image object in place
@@ -125,7 +124,6 @@ def do_ocr():
                                  "error": 3}
 
             # sql logs
-            print(result.message)
             generate_sql(filename=result.message, time_utc=int(time.time()))
 
         # Failed - wrong screenshot page/OCR failed
@@ -251,9 +249,9 @@ def do_ocr():
         multi_final_json.number_invalid_files = num_invalid_images
 
         final = ""
-        if(request_mode=="single"):
+        if request_mode=="single":
             final= jsonpickle.encode(single_final_json, unpicklable=False)
-        if(request_mode=="multi"):
+        if request_mode=="multi":
             final = jsonpickle.encode(multi_final_json, unpicklable=False)
 
         sql_statement = "INSERT INTO log (char_alias, uni_alias, tier, phys_att, energy_att, atk_spd, crit_rate, crit_dam," \
@@ -270,7 +268,8 @@ def do_ocr():
         except:
             pass
 
-        print(final)
+        if request_mode == "single":
+            print(final)
         return final
 
 
@@ -358,8 +357,7 @@ def do_ocr():
                 num_invalid_images += 1
             else:
                 file.filename = str(int(time.time())) + "_" + str(uuid.uuid4().time_low) + "." + ext
-        # else :
-        #     return jsonpickle.encode({"success": False, "error": 1}, unpicklable=False)
+
     print(file_list)
     num_total_files=len(file_list)
 

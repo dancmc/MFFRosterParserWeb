@@ -32,7 +32,6 @@ class Rects:
 
         if math.isclose(ASPECT_RATIO_16_9, aspect, rel_tol=0.04):
             scale = width / 1920
-            print(scale)
 
             self.rect_check_details_page = scale_rect((586, 184, 733, 223))
             self.rect_check_gear_page = scale_rect((156, 23, 313, 74))
@@ -69,7 +68,7 @@ class Rects:
 
         elif math.isclose(ASPECT_RATIO_16_10, aspect, rel_tol=0.04):
             scale = width / 1600
-            print(scale)
+
 
             self.rect_check_details_page = scale_rect((469, 183, 588, 215))
             self.rect_check_gear_page = scale_rect((143, 15, 274, 67))
@@ -106,7 +105,7 @@ class Rects:
 
         elif math.isclose(ASPECT_RATIO_4_3, aspect, rel_tol=0.04):
             scale = width / 1778
-            print(scale)
+
 
             self.rect_check_details_page = scale_rect((520, 316, 655, 355))
             self.rect_check_gear_page = scale_rect((158, 16, 298, 77))
@@ -143,7 +142,7 @@ class Rects:
 
         elif math.isclose(ASPECT_RATIO_185_9, aspect, rel_tol=0.04):
             scale = width / 1776
-            print(scale)
+
 
             self.rect_check_details_page = scale_rect((590, 146, 698, 176))
             self.rect_check_gear_page = scale_rect((127, 17, 248, 58))
@@ -180,6 +179,7 @@ class Rects:
 
         else:
             raise UnsupportedRatioException
+        print("Scale = "+str(scale))
 
 
 list_gear_val = ("physical_attack_by_level",

@@ -12,7 +12,6 @@ function compressAll(mode) {
         return;
     }
 
-
     compress.compress(images, {
         size: 0.1, // the max size in MB, defaults to 2MB
         quality: 0.85, // the quality of the image, max is 1,
@@ -55,7 +54,7 @@ function sub(formData, mode) {
             url: "/mff/ocr",
             type: 'POST',
             data: formData,
-            //async: false,
+            async: true,
             cache: false,
             contentType: false,
             processData: false,
