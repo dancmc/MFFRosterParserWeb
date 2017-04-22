@@ -374,27 +374,27 @@ def get_char_json(filepath):
         char.id = get_char_alias(color_ocr_text(screenshot, rects.rect_char, color=(10, 18, 35), inverted_colors=True))
         char.uniform = get_uniform_alias(color_ocr_text(screenshot, rects.rect_uni,color=(10, 18, 35), inverted_colors=True))
 
-        char.attack.physical = color_ocr_int(screenshot, rects.rect_phys_att, color=(255, 255, 255))
-        char.attack.energy = color_ocr_int(screenshot, rects.rect_energy_att, color=(255, 255, 255))
-        char.atkspeed = color_ocr_float(screenshot, rects.rect_atk_spd, color=(255, 255, 255))
-        char.critrate = color_ocr_float(screenshot, rects.rect_crit_rate, color=(255, 255, 255))
-        char.critdamage = color_ocr_float(screenshot, rects.rect_crit_dam, color=(255, 255, 255))
-        char.defpen = color_ocr_float(screenshot, rects.rect_def_pen, color=(255, 255, 255))
-        char.ignore_dodge = color_ocr_float(screenshot, rects.rect_ignore_dodge, color=(255, 255, 255))
-        char.defense.physical = color_ocr_int(screenshot, rects.rect_phys_def, color=(255, 255, 255))
-        char.defense.energy = color_ocr_int(screenshot, rects.rect_energy_def, color=(255, 255, 255))
-        char.hp = color_ocr_int(screenshot, rects.rect_hp, color=(255, 255, 255))
-        char.recorate = color_ocr_float(screenshot, rects.rect_recorate, color=(255, 255, 255))
-        char.dodge = color_ocr_float(screenshot, rects.rect_dodge, color=(255, 255, 255))
-        char.movspeed = color_ocr_float(screenshot, rects.rect_mv_spd, color=(255, 255, 255))
-        char.debuff = color_ocr_float(screenshot, rects.rect_debuff, color=(255, 255, 255))
-        char.scd = color_ocr_float(screenshot, rects.rect_scd, color=(255, 255, 255))
+        char.attack.physical = color_ocr_int(screenshot, rects.rect_phys_att, color=(255, 255, 255), threshold=100)
+        char.attack.energy = color_ocr_int(screenshot, rects.rect_energy_att, color=(255, 255, 255), threshold=100)
+        char.atkspeed = color_ocr_float(screenshot, rects.rect_atk_spd, color=(255, 255, 255), threshold=100)
+        char.critrate = color_ocr_float(screenshot, rects.rect_crit_rate, color=(255, 255, 255), threshold=100)
+        char.critdamage = color_ocr_float(screenshot, rects.rect_crit_dam, color=(255, 255, 255), threshold=100)
+        char.defpen = color_ocr_float(screenshot, rects.rect_def_pen, color=(255, 255, 255), threshold=100)
+        char.ignore_dodge = color_ocr_float(screenshot, rects.rect_ignore_dodge, color=(255, 255, 255), threshold=100)
+        char.defense.physical = color_ocr_int(screenshot, rects.rect_phys_def, color=(255, 255, 255), threshold=100)
+        char.defense.energy = color_ocr_int(screenshot, rects.rect_energy_def, color=(255, 255, 255), threshold=100)
+        char.hp = color_ocr_int(screenshot, rects.rect_hp, color=(255, 255, 255), threshold=100)
+        char.recorate = color_ocr_float(screenshot, rects.rect_recorate, color=(255, 255, 255), threshold=100)
+        char.dodge = color_ocr_float(screenshot, rects.rect_dodge, color=(255, 255, 255), threshold=100)
+        char.movspeed = color_ocr_float(screenshot, rects.rect_mv_spd, color=(255, 255, 255), threshold=100)
+        char.debuff = color_ocr_float(screenshot, rects.rect_debuff, color=(255, 255, 255), threshold=100)
+        char.scd = color_ocr_float(screenshot, rects.rect_scd, color=(255, 255, 255), threshold=100)
 
         return {"type":"details", "result_char": char, "filepath": filepath}
 
     elif color_ocr_text(screenshot, rects.rect_check_gear_page,color=(10, 18, 35), inverted_colors=True, threshold=170).replace(" ", "") == "gear":
 
-        gear_name = color_ocr_text(screenshot, rects.rect_gear_name, color=(255, 255, 255))
+        gear_name = color_ocr_text(screenshot, rects.rect_gear_name, color=(255, 255, 255), threshold=90)
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)
         char_list = get_chars_from_gear(gear_name)
 
