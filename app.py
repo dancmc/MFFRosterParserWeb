@@ -28,7 +28,7 @@ def mff_ocr():
     if request.method == "POST":
         return do_ocr()
     elif request.method == "GET":
-        return render_template('image_upload.1.01.html')
+        return render_template('image_upload.1.03.html')
 
 
 
@@ -53,4 +53,5 @@ def start_time():
 #         return r
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0')

@@ -12,7 +12,8 @@ function compressAll(mode) {
         resultdiv.append("<h3>Please select 1 or more images</h3>");
     }
 
-    imagesToResizedBlobs(images, {
+    var Compress = new ImageCompressor();
+    Compress.imagesToResizedBlobs(images, {
         "maxSize": 0.1,
         "resize": true,
         "speed": 4,
@@ -84,7 +85,7 @@ function sub(formData, mode) {
                             list.append(option)
                         }
 
-                        var gearname_span = $("<br><p><b>" + dup.gear_name + "</b></p></br>");
+                        var gearname_span = $("<p><b>" + dup.gear_name + "</b></p>");
                         var gearjson_span = $("<br><p>" + dup.gear_json + "</p></br>");
 
                         newdiv.append(image);
@@ -104,7 +105,7 @@ function sub(formData, mode) {
 
                             var image = new Image();
                             image.src = base64;
-                            var succjson_span = $("<br><p>" + succ[base64] + "</p></br>");
+                            var succjson_span = $("<p>" + succ[base64] + "</p>");
 
                             newdiv.append(image);
                             newdiv.append(succjson_span);
