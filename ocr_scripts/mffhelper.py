@@ -392,7 +392,7 @@ def get_char_json(filepath):
 
         return {"type":"details", "result_char": char, "filepath": filepath}
 
-    elif color_ocr_text(screenshot, rects.rect_check_gear_page,color=(10, 18, 35), inverted_colors=True).replace(" ", "") == "gear":
+    elif color_ocr_text(screenshot, rects.rect_check_gear_page,color=(10, 18, 35), inverted_colors=True, threshold=170).replace(" ", "") == "gear":
 
         gear_name = color_ocr_text(screenshot, rects.rect_gear_name, color=(255, 255, 255))
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)

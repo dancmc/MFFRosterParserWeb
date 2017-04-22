@@ -95,6 +95,7 @@ class Ocr:
         black_white_image = binarise_color_image(image, wanted_rgbtuple=color, threshold=threshold, inverted_colors=inverted_colors)
         # self.api.SetVariable("tessedit_char_whitelist", "1234567890+%.")
         now = datetime.now()
+
         self.api.SetImage(black_white_image)
 
         text = self.api.GetUTF8Text().replace("\n", "")

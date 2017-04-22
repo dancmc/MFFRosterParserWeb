@@ -28,7 +28,8 @@ def mff_ocr():
     if request.method == "POST":
         return do_ocr()
     elif request.method == "GET":
-        return render_template('image_upload.html')
+        return render_template('image_upload.1.01.html')
+
 
 
 #### DB stuff ######################################################
