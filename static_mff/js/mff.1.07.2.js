@@ -12,15 +12,15 @@ function compressAll(mode) {
         resultdiv.append("<h3>Please select 1 or more images</h3>");
     }
 
-    imagesToResizedDataUrls(images, {
+    imagesToResizedBlobs(images, {
         "maxSize": 0.1,
         "resize": true,
-        "speed": 1,
+        "speed": 4,
         "log": true
     }, function (resultArray) {
         resultArray.forEach(function (item) {
-            console.log(item.compression);
-            formData.append("file", item);
+            console.log("Compressed by " +item.compression+ "%");
+            formData.append("file", item.blob);
         });
         formData.append("mode", mode);
         sub(formData, mode);
