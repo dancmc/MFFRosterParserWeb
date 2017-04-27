@@ -10,7 +10,7 @@ ASPECT_RATIO_16_9 = 1.777777
 ASPECT_RATIO_16_10 = 1.6
 ASPECT_RATIO_4_3 = 1.3333333
 ASPECT_RATIO_185_9 = 2.055555
-ASPECT_RATIO_15_10 = 1.5
+ASPECT_RATIO_3_2 = 1.5
 
 
 class UnsupportedRatioException(ValueError):
@@ -33,150 +33,185 @@ class Rects:
         if math.isclose(ASPECT_RATIO_16_9, aspect, rel_tol=0.04):
             scale = width / 1920
 
-            self.rect_check_details_page = scale_rect((586, 184, 733, 223))
-            self.rect_check_gear_page = scale_rect((156, 23, 313, 74))
-            self.rect_gear_name = scale_rect((387, 143, 1018, 187))
+            self.rect_check_details_page = scale_rect((589,247,691,286))
+            self.rect_check_gear_page = scale_rect((96,21,222,84))
+            self.rect_gear_name = scale_rect((345,170,1009,216))
 
-            self.rect_tier = scale_rect((460, 393, 555, 427))
-            self.rect_char = scale_rect((104, 479, 546, 520))
-            self.rect_uni = scale_rect((108, 523, 554, 560))
-            self.rect_phys_att = scale_rect((893, 240, 1186, 280))
-            self.rect_energy_att = scale_rect((893, 280, 1186, 327))
-            self.rect_atk_spd = scale_rect((893, 327, 1186, 374))
-            self.rect_crit_rate = scale_rect((893, 374, 1186, 423))
-            self.rect_crit_dam = scale_rect((893, 423, 1186, 468))
-            self.rect_def_pen = scale_rect((893, 468, 1186, 517))
-            self.rect_ignore_dodge = scale_rect((893, 517, 1186, 568))
-            self.rect_phys_def = scale_rect((1499, 238, 1816, 280))
-            self.rect_energy_def = scale_rect((1499, 280, 1816, 329))
-            self.rect_hp = scale_rect((1499, 329, 1816, 376))
-            self.rect_recorate = scale_rect((1499, 376, 1816, 421))
-            self.rect_dodge = scale_rect((1499, 421, 1816, 472))
-            self.rect_mv_spd = scale_rect((1541, 810, 1814, 847))
-            self.rect_debuff = scale_rect((1653, 856, 1816, 895))
-            self.rect_scd = scale_rect((1666, 903, 1816, 937))
+            self.rect_tier = scale_rect((474,512,560,552))
+            self.rect_char = scale_rect((90,418,560,460))
+            self.rect_uni = scale_rect((92,456,564,495))
+            self.rect_phys_att = scale_rect((927,303,1198,339))
+            self.rect_energy_att = scale_rect((927, 339, 1198, 380))
+            self.rect_atk_spd = scale_rect((927, 380, 1198, 418 ))
+            self.rect_crit_rate = scale_rect((927, 418, 1198, 460))
+            self.rect_crit_dam = scale_rect((927, 460, 1198, 504))
+            self.rect_def_pen = scale_rect((927, 504, 1198, 541))
+            self.rect_ignore_dodge = scale_rect((927, 541, 1198, 587))
+            self.rect_phys_def = scale_rect((1582,301,1829,337))
+            self.rect_energy_def = scale_rect((1582, 337, 1829, 382))
+            self.rect_hp = scale_rect((1582, 382, 1829, 420))
+            self.rect_recorate = scale_rect((1582, 420, 1829, 462))
+            self.rect_dodge = scale_rect((1582, 462, 1829, 504))
+            self.rect_mv_spd = scale_rect((1607,808,1829,848))
+            self.rect_debuff = scale_rect((1691,854,1831,887))
+            self.rect_scd = scale_rect((1695,892,1833,931))
 
             self.list_rect_gearstat = list()
-            self.list_rect_gearstat.append(scale_rect((400, 304, 1024, 349)))
-            self.list_rect_gearstat.append(scale_rect((400, 348, 1024, 384)))
-            self.list_rect_gearstat.append(scale_rect((400, 390, 1024, 432)))
-            self.list_rect_gearstat.append(scale_rect((400, 434, 1024, 475)))
-            self.list_rect_gearstat.append(scale_rect((400, 477, 1024, 517)))
-            self.list_rect_gearstat.append(scale_rect((400, 521, 1024, 559)))
-            self.list_rect_gearstat.append(scale_rect((400, 564, 1024, 603)))
-            self.list_rect_gearstat.append(scale_rect((400, 606, 1024, 646)))
+            self.list_rect_gearstat.append(scale_rect((351,324,1000,359)))
+            self.list_rect_gearstat.append(scale_rect((351, 359, 1000, 407 )))
+            self.list_rect_gearstat.append(scale_rect((351, 407, 1000, 447)))
+            self.list_rect_gearstat.append(scale_rect((351, 447, 1000, 493)))
+            self.list_rect_gearstat.append(scale_rect((351, 493, 1000, 535)))
+            self.list_rect_gearstat.append(scale_rect((351, 535, 1000, 577)))
+            self.list_rect_gearstat.append(scale_rect((351, 577, 1000, 618)))
+            self.list_rect_gearstat.append(scale_rect((351, 618, 1000, 666)))
 
         elif math.isclose(ASPECT_RATIO_16_10, aspect, rel_tol=0.04):
             scale = width / 1600
 
 
-            self.rect_check_details_page = scale_rect((469, 183, 588, 215))
-            self.rect_check_gear_page = scale_rect((143, 15, 274, 67))
-            self.rect_gear_name = scale_rect((285, 147, 859, 186))
+            self.rect_check_details_page = scale_rect((467,241,560,273))
+            self.rect_check_gear_page = scale_rect((91,20,192,67))
+            self.rect_gear_name = scale_rect((257,172,841,209))
 
-            self.rect_tier = scale_rect((352, 367, 442, 400))
-            self.rect_char = scale_rect((41, 446, 441, 482))
-            self.rect_uni = scale_rect((41, 482, 441, 520))
-            self.rect_phys_att = scale_rect((736, 230, 1000, 268))
-            self.rect_energy_att = scale_rect((736, 268, 1000, 313))
-            self.rect_atk_spd = scale_rect((736, 313, 1000, 354))
-            self.rect_crit_rate = scale_rect((736, 354, 1000, 396))
-            self.rect_crit_dam = scale_rect((736, 396, 1000, 437))
-            self.rect_def_pen = scale_rect((736, 437, 1000, 482))
-            self.rect_ignore_dodge = scale_rect((736, 482, 1000, 522))
-            self.rect_phys_def = scale_rect((1278, 231, 1560, 271))
-            self.rect_energy_def = scale_rect((1278, 271, 1560, 313))
-            self.rect_hp = scale_rect((1278, 313, 1560, 354))
-            self.rect_recorate = scale_rect((1278, 354, 1560, 397))
-            self.rect_dodge = scale_rect((1278, 397, 1560, 439))
-            self.rect_mv_spd = scale_rect((1299, 738, 1560, 778))
-            self.rect_debuff = scale_rect((1367, 778, 1560, 817))
-            self.rect_scd = scale_rect((1367, 817, 1560, 860))
+            self.rect_tier = scale_rect((371,480,443,515))
+            self.rect_char = scale_rect((28,393,446,428))
+            self.rect_uni = scale_rect((25,430,444,459))
+            self.rect_phys_att = scale_rect((787,289,1008,320))
+            self.rect_energy_att = scale_rect((787, 320, 1008, 358))
+            self.rect_atk_spd = scale_rect((787, 358, 1008, 395))
+            self.rect_crit_rate = scale_rect((787, 395, 1008, 430))
+            self.rect_crit_dam = scale_rect((787, 430, 1008, 465))
+            self.rect_def_pen = scale_rect((787, 465, 1008, 502))
+            self.rect_ignore_dodge = scale_rect((787, 502, 1008, 539))
+            self.rect_phys_def = scale_rect((1353,288,1569,321))
+            self.rect_energy_def = scale_rect((1353, 321, 1569, 358))
+            self.rect_hp = scale_rect((1353, 358, 1569, 395))
+            self.rect_recorate = scale_rect((1353, 395, 1569, 432))
+            self.rect_dodge = scale_rect((1353, 432, 1569, 468))
+            self.rect_mv_spd = scale_rect((1371,739,1571,776))
+            self.rect_debuff = scale_rect((1459,777,1576,811))
+            self.rect_scd = scale_rect((1468,811,1574,846))
 
             self.list_rect_gearstat = list()
-            self.list_rect_gearstat.append(scale_rect((300, 290, 859, 325)))
-            self.list_rect_gearstat.append(scale_rect((300, 325, 859, 365)))
-            self.list_rect_gearstat.append(scale_rect((300, 365, 859, 405)))
-            self.list_rect_gearstat.append(scale_rect((300, 405, 859, 443)))
-            self.list_rect_gearstat.append(scale_rect((300, 443, 859, 479)))
-            self.list_rect_gearstat.append(scale_rect((300, 479, 859, 518)))
-            self.list_rect_gearstat.append(scale_rect((300, 518, 859, 556)))
-            self.list_rect_gearstat.append(scale_rect((300, 556, 859, 596)))
+            self.list_rect_gearstat.append(scale_rect((262,307,838,340)))
+            self.list_rect_gearstat.append(scale_rect((262, 340, 838, 380)))
+            self.list_rect_gearstat.append(scale_rect((262, 380, 838, 419)))
+            self.list_rect_gearstat.append(scale_rect((262, 419, 838, 457)))
+            self.list_rect_gearstat.append(scale_rect((262, 457, 838, 494)))
+            self.list_rect_gearstat.append(scale_rect((262, 494, 838, 532)))
+            self.list_rect_gearstat.append(scale_rect((262, 532, 838, 571)))
+            self.list_rect_gearstat.append(scale_rect((262, 571, 838, 612)))
 
         elif math.isclose(ASPECT_RATIO_4_3, aspect, rel_tol=0.04):
             scale = width / 1778
 
 
-            self.rect_check_details_page = scale_rect((520, 316, 655, 355))
-            self.rect_check_gear_page = scale_rect((158, 16, 298, 77))
-            self.rect_gear_name = scale_rect((325, 273, 960, 320))
+            self.rect_check_details_page = scale_rect((520,378,622,416))
+            self.rect_check_gear_page = scale_rect((96,24,216,76))
+            self.rect_gear_name = scale_rect((286,300,928,346))
 
-            self.rect_tier = scale_rect((395, 515, 490, 555))
-            self.rect_char = scale_rect((43, 604, 489, 647))
-            self.rect_uni = scale_rect((43, 647, 490, 683))
-            self.rect_phys_att = scale_rect((812, 368, 1113, 411))
-            self.rect_energy_att = scale_rect((812, 411, 1113, 459))
-            self.rect_atk_spd = scale_rect((812, 459, 1113, 506))
-            self.rect_crit_rate = scale_rect((812, 506, 1113, 553))
-            self.rect_crit_dam = scale_rect((812, 553, 1113, 597))
-            self.rect_def_pen = scale_rect((812, 597, 1113, 645))
-            self.rect_ignore_dodge = scale_rect((812, 645, 1113, 691))
-            self.rect_phys_def = scale_rect((1419, 369, 1736, 412))
-            self.rect_energy_def = scale_rect((1419, 412, 1736, 458))
-            self.rect_hp = scale_rect((1419, 458, 1736, 504))
-            self.rect_recorate = scale_rect((1419, 504, 1736, 552))
-            self.rect_dodge = scale_rect((1419, 552, 1736, 602))
-            self.rect_mv_spd = scale_rect((1434, 931, 1736, 977))
-            self.rect_debuff = scale_rect((1501, 977, 1736, 1022))
-            self.rect_scd = scale_rect((1501, 1022, 1736, 1066))
+            self.rect_tier = scale_rect((412,643,494,680))
+            self.rect_char = scale_rect((30,551,497,588))
+            self.rect_uni = scale_rect((28,586,487,622))
+            self.rect_phys_att = scale_rect((872,432,1123,467))
+            self.rect_energy_att = scale_rect((872, 467, 1123, 508))
+            self.rect_atk_spd = scale_rect((872, 508, 1123, 551))
+            self.rect_crit_rate = scale_rect((872, 551, 1123, 588))
+            self.rect_crit_dam = scale_rect((872, 588, 1123, 627))
+            self.rect_def_pen = scale_rect((872, 627, 1123, 670))
+            self.rect_ignore_dodge = scale_rect((872, 670, 1123, 709))
+            self.rect_phys_def = scale_rect((1516,432,1745,467))
+            self.rect_energy_def = scale_rect((1516, 467, 1745, 508))
+            self.rect_hp = scale_rect((1516, 508, 1745, 549))
+            self.rect_recorate = scale_rect((1516, 549, 1745, 588))
+            self.rect_dodge = scale_rect((1516, 588, 1745, 631))
+            self.rect_mv_spd = scale_rect((1530,933,1745,974))
+            self.rect_debuff = scale_rect((1625,976,1747,1011))
+            self.rect_scd = scale_rect((1626,1015,1749,1050))
 
             self.list_rect_gearstat = list()
-            self.list_rect_gearstat.append(scale_rect((337, 434, 959, 474)))
-            self.list_rect_gearstat.append(scale_rect((337, 474, 959, 518)))
-            self.list_rect_gearstat.append(scale_rect((337, 518, 959, 560)))
-            self.list_rect_gearstat.append(scale_rect((337, 560, 959, 602)))
-            self.list_rect_gearstat.append(scale_rect((337, 602, 959, 646)))
-            self.list_rect_gearstat.append(scale_rect((337, 646, 959, 686)))
-            self.list_rect_gearstat.append(scale_rect((337, 686, 959, 730)))
-            self.list_rect_gearstat.append(scale_rect((337, 730, 959, 772)))
+            self.list_rect_gearstat.append(scale_rect((288,449,928,492)))
+            self.list_rect_gearstat.append(scale_rect((288, 492, 928, 535)))
+            self.list_rect_gearstat.append(scale_rect((288, 535, 928, 577)))
+            self.list_rect_gearstat.append(scale_rect((288, 577, 928, 618)))
+            self.list_rect_gearstat.append(scale_rect((288, 618, 928, 659)))
+            self.list_rect_gearstat.append(scale_rect((288, 659, 928, 702)))
+            self.list_rect_gearstat.append(scale_rect((288, 702, 928, 744)))
+            self.list_rect_gearstat.append(scale_rect((288, 744, 928, 791)))
 
         elif math.isclose(ASPECT_RATIO_185_9, aspect, rel_tol=0.04):
             scale = width / 1776
 
 
-            self.rect_check_details_page = scale_rect((590, 146, 698, 176))
-            self.rect_check_gear_page = scale_rect((127, 17, 248, 58))
-            self.rect_gear_name = scale_rect((427, 114, 948, 155))
+            self.rect_check_details_page = scale_rect((587,200,671,227))
+            self.rect_check_gear_page = scale_rect((79,19,172,65))
+            self.rect_gear_name = scale_rect((397,133,925,174))
 
-            self.rect_tier = scale_rect((487, 314, 564, 343))
-            self.rect_char = scale_rect((202, 384, 564, 416))
-            self.rect_uni = scale_rect((202, 416, 564, 447))
-            self.rect_phys_att = scale_rect((829, 190, 1069, 224))
-            self.rect_energy_att = scale_rect((829, 224, 1069, 263))
-            self.rect_atk_spd = scale_rect((829, 263, 1069, 301))
-            self.rect_crit_rate = scale_rect((829, 301, 1069, 341))
-            self.rect_crit_dam = scale_rect((829, 341, 1069, 377))
-            self.rect_def_pen = scale_rect((829, 377, 1069, 413))
-            self.rect_ignore_dodge = scale_rect((829, 413, 1069, 451))
-            self.rect_phys_def = scale_rect((1325, 188, 1572, 225))
-            self.rect_energy_def = scale_rect((1325, 225, 1572, 265))
-            self.rect_hp = scale_rect((1325, 265, 1572, 301))
-            self.rect_recorate = scale_rect((1325, 301, 1572, 339))
-            self.rect_dodge = scale_rect((1325, 339, 1572, 377))
-            self.rect_mv_spd = scale_rect((1339, 646, 1572, 682))
-            self.rect_debuff = scale_rect((1400, 682, 1572, 720))
-            self.rect_scd = scale_rect((1400, 720, 1572, 756))
+            self.rect_tier = scale_rect((499,410,570,444))
+            self.rect_char = scale_rect((195,339,564,367))
+            self.rect_uni = scale_rect((191,367,566,394))
+            self.rect_phys_att = scale_rect((882,239,1076,271))
+            self.rect_energy_att = scale_rect((882, 271, 1076, 303))
+            self.rect_atk_spd = scale_rect((882, 303, 1076, 337))
+            self.rect_crit_rate = scale_rect((882, 337, 1076, 369))
+            self.rect_crit_dam = scale_rect((882, 369, 1076, 401))
+            self.rect_def_pen = scale_rect((882, 401, 1076, 433))
+            self.rect_ignore_dodge = scale_rect((882, 433, 1076, 467))
+            self.rect_phys_def = scale_rect((1397,241,1584,273))
+            self.rect_energy_def = scale_rect((1397, 273, 1584, 303))
+            self.rect_hp = scale_rect((1397, 303, 1584, 337))
+            self.rect_recorate = scale_rect((1397, 337, 1584, 369))
+            self.rect_dodge = scale_rect((1397, 369, 1584, 401))
+            self.rect_mv_spd = scale_rect((1406,644,1587,681))
+            self.rect_debuff = scale_rect((1491,680,1585,713))
+            self.rect_scd = scale_rect((1486,712,1584,742))
 
             self.list_rect_gearstat = list()
-            self.list_rect_gearstat.append(scale_rect((439, 243, 942, 277)))
-            self.list_rect_gearstat.append(scale_rect((439, 277, 942, 310)))
-            self.list_rect_gearstat.append(scale_rect((439, 310, 942, 346)))
-            self.list_rect_gearstat.append(scale_rect((439, 346, 942, 379)))
-            self.list_rect_gearstat.append(scale_rect((439, 379, 942, 414)))
-            self.list_rect_gearstat.append(scale_rect((439, 414, 942, 447)))
-            self.list_rect_gearstat.append(scale_rect((439, 447, 942, 482)))
-            self.list_rect_gearstat.append(scale_rect((439, 482, 942, 520)))
+            self.list_rect_gearstat.append(scale_rect((406,257,919,289)))
+            self.list_rect_gearstat.append(scale_rect((406, 289, 919, 325)))
+            self.list_rect_gearstat.append(scale_rect((406, 325, 919, 358)))
+            self.list_rect_gearstat.append(scale_rect((406, 358, 919, 392)))
+            self.list_rect_gearstat.append(scale_rect((406, 392, 919, 426)))
+            self.list_rect_gearstat.append(scale_rect((406, 426, 919, 461)))
+            self.list_rect_gearstat.append(scale_rect((406, 461, 919, 495)))
+            self.list_rect_gearstat.append(scale_rect((406, 495, 919, 531)))
 
+        elif math.isclose(ASPECT_RATIO_3_2, aspect, rel_tol=0.04):
+            scale = width / 1500
+
+            self.rect_check_details_page = scale_rect((438,255,528,288))
+            self.rect_check_gear_page = scale_rect((81,19,186,63))
+            self.rect_gear_name = scale_rect((243,190,778,231))
+
+            self.rect_tier = scale_rect((349,478,415,513))
+            self.rect_char = scale_rect((25,403,415,433))
+            self.rect_uni = scale_rect((25,433,415,460))
+            self.rect_phys_att = scale_rect((738,298,946,331))
+            self.rect_energy_att = scale_rect((738, 331, 946, 369))
+            self.rect_atk_spd = scale_rect((738, 369, 946, 400))
+            self.rect_crit_rate = scale_rect((738, 400, 946, 435))
+            self.rect_crit_dam = scale_rect((738, 435, 946, 469))
+            self.rect_def_pen = scale_rect((738, 469, 946, 501))
+            self.rect_ignore_dodge = scale_rect((738, 501, 946, 537))
+            self.rect_phys_def = scale_rect((1279,301,1476,333))
+            self.rect_energy_def = scale_rect((1279, 333, 1476, 367))
+            self.rect_hp = scale_rect((1279, 367, 1476, 400))
+            self.rect_recorate = scale_rect((1279, 400, 1476, 435))
+            self.rect_dodge = scale_rect((1279, 435, 1476, 469))
+            self.rect_mv_spd = scale_rect((1291,721,1474,759))
+            self.rect_debuff = scale_rect((1372,759,1476,792))
+            self.rect_scd = scale_rect((1380,790,1476,829))
+
+            self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((246,316,786,352)))
+            self.list_rect_gearstat.append(scale_rect((246, 352, 786, 390)))
+            self.list_rect_gearstat.append(scale_rect((246, 390, 786, 423)))
+            self.list_rect_gearstat.append(scale_rect((246, 423, 786, 459)))
+            self.list_rect_gearstat.append(scale_rect((246, 459, 786, 496)))
+            self.list_rect_gearstat.append(scale_rect((246, 496, 786, 531)))
+            self.list_rect_gearstat.append(scale_rect((246, 531, 786, 565)))
+            self.list_rect_gearstat.append(scale_rect((246, 565, 786, 603)))
         else:
             raise UnsupportedRatioException
         print("Scale = "+str(scale))
@@ -358,6 +393,7 @@ def get_char_json(filepath):
     width = screenshot.size[0]
     height = screenshot.size[1]
 
+
     # define rects based on aspect ratio
     try:
         rects = Rects(width, height)
@@ -366,11 +402,11 @@ def get_char_json(filepath):
         e.message = filepath
         return e
 
-    if color_ocr_text(screenshot, rects.rect_check_details_page, color=(10, 18, 35), inverted_colors=True).replace(" ", "") == "attack":
+    if color_ocr_text(screenshot, rects.rect_check_details_page, color=(23, 23, 57), threshold=90, inverted_colors=True).replace(" ", "") == "attack":
 
         char = Character()
 
-        char.tier = 2 if ("2" in color_ocr_text(screenshot, rects.rect_tier, (8, 20, 34), inverted_colors=True ).replace("z", "2")) else 1
+        char.tier = 2 if ("2" in color_ocr_text(screenshot, rects.rect_tier, (18, 25, 47), threshold=90, inverted_colors=True ).replace("z", "2")) else 1
         char.id = get_char_alias(color_ocr_text(screenshot, rects.rect_char, color=(10, 18, 35), inverted_colors=True))
         char.uniform = get_uniform_alias(color_ocr_text(screenshot, rects.rect_uni,color=(10, 18, 35), inverted_colors=True))
 
@@ -392,7 +428,7 @@ def get_char_json(filepath):
 
         return {"type":"details", "result_char": char, "filepath": filepath}
 
-    elif color_ocr_text(screenshot, rects.rect_check_gear_page,color=(10, 18, 35), inverted_colors=True, threshold=170).replace(" ", "") == "gear":
+    elif color_ocr_text(screenshot, rects.rect_check_gear_page,color=(10, 18, 35), inverted_colors=True, threshold=140).replace(" ", "") == "gear":
 
         gear_name = color_ocr_text(screenshot, rects.rect_gear_name, color=(255, 255, 255), threshold=90)
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)

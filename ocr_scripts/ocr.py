@@ -80,6 +80,7 @@ class Ocr:
         self.api.SetPageSegMode(tesserocr.PSM.SINGLE_LINE)
 
 
+
     def ocr_using_greyscale(self, image, threshold=200):
         now = datetime.now()
         black_white_image = binarise_greyscale_image(image, threshold)

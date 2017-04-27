@@ -32,6 +32,7 @@ def mff_ocr():
 
 
 
+
 #### DB stuff ######################################################
 @app.before_request
 def start_time():

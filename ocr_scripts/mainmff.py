@@ -270,6 +270,8 @@ def do_ocr():
 
         if request_mode == "single":
             print(final)
+        if request_mode == "multi":
+            print("multi finished")
         return final
 
 
