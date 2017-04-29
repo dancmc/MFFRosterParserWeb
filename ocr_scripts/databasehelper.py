@@ -1,5 +1,6 @@
 import Levenshtein
 import MySQLdb
+import datetime
 
 from . import settings
 
@@ -25,7 +26,6 @@ def get_chars_from_gear(ocr_output):
     cur = connect().cursor()
     result_list = list()
 
-
     # try to find exact match for gear name
     sql = "SELECT char_alias, gear1 as gear_name, '1' AS gear_num FROM mff WHERE %s = gear1 GROUP BY char_alias, gear1 " \
           "UNION SELECT char_alias, gear2, '2' AS gear_num FROM mff WHERE %s = gear2 GROUP BY char_alias, gear2 " \
@@ -41,6 +41,7 @@ def get_chars_from_gear(ocr_output):
     # if no exact match, try to find close match
     if cur.rowcount == 0:
         # create view with all gears in game, union means no duplicates
+
         sql = "SELECT char_alias, gear1 as gear_name, '1' AS gear_num FROM mff " \
               "UNION SELECT char_alias, gear2, '2' AS gear_num FROM mff " \
               "UNION SELECT char_alias, gear3, '3' AS gear_num FROM mff " \
