@@ -56,6 +56,9 @@ class Rects:
             self.rect_scd = scale_rect((1695, 892, 1833, 931))
 
             self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((351, 238, 1000, 276)))
+            self.list_rect_gearstat.append(scale_rect((351, 276, 1000, 320)))
+
             self.list_rect_gearstat.append(scale_rect((351, 324, 1000, 359)))
             self.list_rect_gearstat.append(scale_rect((351, 359, 1000, 407)))
             self.list_rect_gearstat.append(scale_rect((351, 407, 1000, 447)))
@@ -65,7 +68,6 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((351, 577, 1000, 618)))
             self.list_rect_gearstat.append(scale_rect((351, 618, 1000, 666)))
 
-            self.list_rect_gearstat.append(scale_rect((351, 238, 1000, 276)))
 
         elif math.isclose(ASPECT_RATIO_16_10, aspect, rel_tol=0.04):
             scale = width / 1600
@@ -94,6 +96,9 @@ class Rects:
             self.rect_scd = scale_rect((1468, 811, 1574, 846))
 
             self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((262, 230, 838, 265)))
+            self.list_rect_gearstat.append(scale_rect((262, 265, 838, 304)))
+
             self.list_rect_gearstat.append(scale_rect((262, 307, 838, 340)))
             self.list_rect_gearstat.append(scale_rect((262, 340, 838, 380)))
             self.list_rect_gearstat.append(scale_rect((262, 380, 838, 419)))
@@ -102,8 +107,6 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((262, 494, 838, 532)))
             self.list_rect_gearstat.append(scale_rect((262, 532, 838, 571)))
             self.list_rect_gearstat.append(scale_rect((262, 571, 838, 612)))
-
-            self.list_rect_gearstat.append(scale_rect((262, 230, 838, 265)))
 
         elif math.isclose(ASPECT_RATIO_4_3, aspect, rel_tol=0.04):
             scale = width / 1778
@@ -132,6 +135,9 @@ class Rects:
             self.rect_scd = scale_rect((1626, 1015, 1749, 1050))
 
             self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((288, 368, 928, 407)))
+            self.list_rect_gearstat.append(scale_rect((288, 407, 928, 451)))
+
             self.list_rect_gearstat.append(scale_rect((288, 449, 928, 492)))
             self.list_rect_gearstat.append(scale_rect((288, 492, 928, 535)))
             self.list_rect_gearstat.append(scale_rect((288, 535, 928, 577)))
@@ -140,8 +146,6 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((288, 659, 928, 702)))
             self.list_rect_gearstat.append(scale_rect((288, 702, 928, 744)))
             self.list_rect_gearstat.append(scale_rect((288, 744, 928, 791)))
-
-            self.list_rect_gearstat.append(scale_rect((288, 368, 928, 407)))
 
         elif math.isclose(ASPECT_RATIO_185_9, aspect, rel_tol=0.04):
             scale = width / 1776
@@ -170,6 +174,9 @@ class Rects:
             self.rect_scd = scale_rect((1486, 712, 1584, 742))
 
             self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((406, 190, 919, 220)))
+            self.list_rect_gearstat.append(scale_rect((406, 220, 919, 257)))
+
             self.list_rect_gearstat.append(scale_rect((406, 257, 919, 289)))
             self.list_rect_gearstat.append(scale_rect((406, 289, 919, 325)))
             self.list_rect_gearstat.append(scale_rect((406, 325, 919, 358)))
@@ -178,8 +185,6 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((406, 426, 919, 461)))
             self.list_rect_gearstat.append(scale_rect((406, 461, 919, 495)))
             self.list_rect_gearstat.append(scale_rect((406, 495, 919, 531)))
-
-            self.list_rect_gearstat.append(scale_rect((406, 190, 919, 220)))
 
         elif math.isclose(ASPECT_RATIO_3_2, aspect, rel_tol=0.04):
             scale = width / 1500
@@ -208,6 +213,9 @@ class Rects:
             self.rect_scd = scale_rect((1380, 790, 1476, 829))
 
             self.list_rect_gearstat = list()
+            self.list_rect_gearstat.append(scale_rect((246, 246, 786, 279)))
+            self.list_rect_gearstat.append(scale_rect((246, 279, 786, 318)))
+
             self.list_rect_gearstat.append(scale_rect((246, 316, 786, 352)))
             self.list_rect_gearstat.append(scale_rect((246, 352, 786, 390)))
             self.list_rect_gearstat.append(scale_rect((246, 390, 786, 423)))
@@ -217,7 +225,6 @@ class Rects:
             self.list_rect_gearstat.append(scale_rect((246, 531, 786, 565)))
             self.list_rect_gearstat.append(scale_rect((246, 565, 786, 603)))
 
-            self.list_rect_gearstat.append(scale_rect((246, 246, 786, 279)))
         else:
             raise UnsupportedRatioException
         print("Scale = " + str(scale))
@@ -332,7 +339,7 @@ def color_ocr_float(image, rect, color=(255, 255, 255), threshold=120, inverted_
     return num
 
 
-def get_gear(screenshot, rects):
+def get_gear(screenshot, rects, gearis5):
     # split gear state rectangle into left and right
     def split_gear_rect(rect):
         return ((rect[0], rect[1], int((rect[2] - rect[0]) * 0.7 + rect[0]), rect[3]),
@@ -383,13 +390,12 @@ def get_gear(screenshot, rects):
             val = 0.
         return gear_type, val, gear_num
 
-    gearnum = -1
     gear = [GearValue() for i in range(8)]
-    for i, item in enumerate(rects):
-        if i==8:
-            gearnum = do_ocr(screenshot, rects[8])[2]
-        else:
-            gear[i].type, gear[i].val, num = do_ocr(screenshot, rects[i])
+    gearnum = do_ocr(screenshot, rects[0])[2]
+    offset = 1 if gearis5 else 2
+    for i in range(8):
+        gear[i].type, gear[i].val, num = do_ocr(screenshot, rects[i+offset])
+
     return gear, gearnum
 
 
@@ -451,7 +457,11 @@ def get_char_json(filepath):
     elif color_ocr_text(screenshot, rects.rect_check_gear_page, color=(10, 18, 35), inverted_colors=True,
                         threshold=140).replace(" ", "") == "gear":
 
-        gear_name = color_ocr_text(screenshot, rects.rect_gear_name, color=(255, 255, 255), threshold=90)
+        gear_name_and_level = color_ocr_text(screenshot, rects.rect_gear_name, inverted_colors=True,color=(28,44,60), threshold=125).split("+")
+        gear_name = gear_name_and_level[0].strip()
+        gear_level_string = gear_name_and_level[1].strip().lower().replace("s", "5").replace("l", "1")
+        gear_is_5 = "5" in gear_level_string and "1" not in gear_level_string
+
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)
         char_list = get_chars_from_gear(gear_name)
 
@@ -464,14 +474,14 @@ def get_char_json(filepath):
             char.id = char_list[0]["id"]
             # database returns gear numbers 1-4
             gear_num = char_list[0]["gear_num"]
-            char.gear[gear_num - 1] = get_gear(screenshot, rects.list_rect_gearstat)[0]
+            char.gear[gear_num - 1] = get_gear(screenshot, rects.list_rect_gearstat, gear_is_5)[0]
             char.uniform = get_default_uni(char.id)
 
             return {"type": "gear", "result_char": char, "char_list": char_list, "gear_num": gear_num,
                     "gear_name": gear_name, "filepath": filepath}
         else:
             # return (char_list, gear_stats_list) where gear_stats_list is a list of 8 GearValue objects
-            gear_result, gear_num = get_gear(screenshot, rects.list_rect_gearstat)
+            gear_result, gear_num = get_gear(screenshot, rects.list_rect_gearstat, gear_is_5)
             if gear_num == -1:
                 return {"type": "gear_dup", "char_list": char_list, "gear": gear_result, "filepath": filepath}
             else:

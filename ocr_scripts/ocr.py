@@ -51,7 +51,7 @@ def binarise_color_image(im, wanted_rgbtuple=(255,255,255), threshold=120, inver
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     output_img = cv2.erode(output_img, kernel, iterations=1)
 
-
+    # reverse thresholded tuples to BGR array
     lower_color = numpy.array([max(0, x-threshold) for x in wanted_rgbtuple])[::-1]
     upper_color = numpy.array([min(255, x + threshold) for x in wanted_rgbtuple])[::-1]
     mask = cv2.inRange(output_img, lower_color, upper_color)
