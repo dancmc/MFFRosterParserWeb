@@ -339,7 +339,7 @@ def color_ocr_float(image, rect, color=(255, 255, 255), threshold=120, inverted_
     return num
 
 
-def get_gear(screenshot, rects, gearis5):
+def get_gear(screenshot, rects, gearis5less):
     # split gear state rectangle into left and right
     def split_gear_rect(rect):
         return ((rect[0], rect[1], int((rect[2] - rect[0]) * 0.7 + rect[0]), rect[3]),
@@ -392,7 +392,7 @@ def get_gear(screenshot, rects, gearis5):
 
     gear = [GearValue() for i in range(8)]
     gearnum = do_ocr(screenshot, rects[0])[2]
-    offset = 1 if gearis5 else 2
+    offset = 1 if gearis5less else 2
     for i in range(8):
         gear[i].type, gear[i].val, num = do_ocr(screenshot, rects[i+offset])
 
@@ -459,8 +459,11 @@ def get_char_json(filepath):
 
         gear_name_and_level = color_ocr_text(screenshot, rects.rect_gear_name, inverted_colors=True,color=(28,44,60), threshold=125).split("+")
         gear_name = gear_name_and_level[0].strip()
-        gear_level_string = gear_name_and_level[1].strip().lower().replace("s", "5").replace("l", "1")
-        gear_is_5 = "5" in gear_level_string and "1" not in gear_level_string
+        try:
+            gear_level_string = int(gear_name_and_level[1].lower().replace("s", "5").replace("l", "1").replace("z","2").replace("o","0").replace("g","9").replace(".","").replace(",","").replace(" ", ""))
+        except (IndexError, ValueError) as e:
+            gear_level_string = "6"
+        gear_is_5less = gear_level_string in range(1,6)
 
         # returns list of dicts from DB with format (char_alias, gear_name, gear_num)
         char_list = get_chars_from_gear(gear_name)
@@ -474,14 +477,14 @@ def get_char_json(filepath):
             char.id = char_list[0]["id"]
             # database returns gear numbers 1-4
             gear_num = char_list[0]["gear_num"]
-            char.gear[gear_num - 1] = get_gear(screenshot, rects.list_rect_gearstat, gear_is_5)[0]
+            char.gear[gear_num - 1] = get_gear(screenshot, rects.list_rect_gearstat, gear_is_5less)[0]
             char.uniform = get_default_uni(char.id)
 
             return {"type": "gear", "result_char": char, "char_list": char_list, "gear_num": gear_num,
                     "gear_name": gear_name, "filepath": filepath}
         else:
             # return (char_list, gear_stats_list) where gear_stats_list is a list of 8 GearValue objects
-            gear_result, gear_num = get_gear(screenshot, rects.list_rect_gearstat, gear_is_5)
+            gear_result, gear_num = get_gear(screenshot, rects.list_rect_gearstat, gear_is_5less)
             if gear_num == -1:
                 return {"type": "gear_dup", "char_list": char_list, "gear": gear_result, "filepath": filepath}
             else:
