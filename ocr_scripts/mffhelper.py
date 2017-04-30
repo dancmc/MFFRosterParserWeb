@@ -222,8 +222,6 @@ class Rects:
             raise UnsupportedRatioException
         print("Scale = " + str(scale))
 
-
-# make sure the "by level" attributes come before their plain counterparts
 list_gear_dict = (("physical_attack_by_level", "physicalattackperlv.", 1),
                   ("physical_attack", "physicalattack", 1),
                   ("energy_attack_by_level", "energyattackperlv.", 1),
@@ -348,7 +346,7 @@ def get_gear(screenshot, rects):
         right_rect = stat_rects[1]
 
         # get raw ocr result
-        raw_type = color_ocr_text(image, left_rect, color=(10, 18, 35), threshold=135, inverted_colors=True).replace(
+        raw_type = color_ocr_text(image, left_rect, color=(10, 18, 35), threshold=100, inverted_colors=True).replace(
             " ", "").lower()
         gear_type = ""
         gear_num = -1
@@ -357,9 +355,14 @@ def get_gear(screenshot, rects):
             # this step checks for 'exact' match
             for item in list_gear_dict:
                 if item[1] in raw_type:
-                    gear_type = item[0]
-                    gear_num = item[2]
-                    break
+                    perinitem = "per" in item[1]
+                    perinraw = "per" in raw_type
+
+                    # "per" has to be in both or not in both for an exact match
+                    if (perinitem and perinraw) or (not perinitem and not perinraw):
+                        gear_type = item[0]
+                        gear_num = item[2]
+                        break
             # otherwise find nearest attribute match
             if gear_type == "":
                 threshold = 3
@@ -461,7 +464,7 @@ def get_char_json(filepath):
             char.id = char_list[0]["id"]
             # database returns gear numbers 1-4
             gear_num = char_list[0]["gear_num"]
-            char.gear[gear_num - 1] = get_gear(screenshot, rects.list_rect_gearstat)
+            char.gear[gear_num - 1] = get_gear(screenshot, rects.list_rect_gearstat)[0]
             char.uniform = get_default_uni(char.id)
 
             return {"type": "gear", "result_char": char, "char_list": char_list, "gear_num": gear_num,

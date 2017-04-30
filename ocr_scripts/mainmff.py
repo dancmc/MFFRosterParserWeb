@@ -184,6 +184,7 @@ def do_ocr():
                 multi_final_json.successful.append({resize_and_to_base64(result["filepath"]): result_json})
 
             gear = char.gear[result["gear_num"]-1]
+            print(char.gear[2][0])
             single_final_json = {"success":True,
                                  "type":"gear",
                                  "content": {"char_list": char_dict,

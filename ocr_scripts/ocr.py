@@ -64,7 +64,7 @@ def binarise_color_image(im, wanted_rgbtuple=(255,255,255), threshold=120, inver
 
     # usually wanted_rgbtuple should be text color. if background color retained, invert flag should be set
     if(inverted_colors):
-        output_img = numpy.where(output_img[:,:,:]==0, 255, 0, )
+        output_img = numpy.where(output_img[:,:,:]==0, 255, 0 )
         output_img = output_img.astype(numpy.uint8)
 
     output_img = cv2.copyMakeBorder(output_img, top=20, left=20, right=20, bottom=20, borderType=cv2.BORDER_CONSTANT, value=[0,0,0])
