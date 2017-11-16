@@ -3,6 +3,7 @@ from flask_cors import cross_origin, CORS
 import time
 
 
+
 from ocr_scripts.mainmff import do_ocr
 
 app = Flask(__name__, template_folder="./templates")

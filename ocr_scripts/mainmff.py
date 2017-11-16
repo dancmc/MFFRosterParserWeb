@@ -7,6 +7,7 @@ import threading
 import time
 import uuid
 from flask import g, request
+from .settings import *
 
 from . import databasehelper as db
 import jsonpickle
@@ -17,7 +18,7 @@ from werkzeug.datastructures import FileStorage
 from .mffhelper import UnsupportedRatioException
 from .mffhelper import get_char_json
 
-UPLOAD_FOLDER = '/var/www/app_dancmc/mff/ocr_scripts/uploaded_screenshots'
+UPLOAD_FOLDER = SCREENSHOTS_FOLDER
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff']
 
 
